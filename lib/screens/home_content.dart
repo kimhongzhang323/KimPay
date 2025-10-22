@@ -6,6 +6,7 @@ import 'send_money_screen.dart';
 import 'receive_money_screen.dart';
 import 'ai_insights_screen.dart';
 import 'topup_screen.dart';
+import 'scan_screen.dart';
 
 class HomeContent extends StatelessWidget {
   final String selectedCurrency;
@@ -227,7 +228,14 @@ class HomeContent extends StatelessWidget {
                       icon: Icons.qr_code_scanner,
                       label: 'Scan',
                       color: AppColors.primaryBlue,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ScanScreen(),
+                          ),
+                        );
+                      },
                     ),
                     _QuickActionButton(
                       icon: Icons.add,
