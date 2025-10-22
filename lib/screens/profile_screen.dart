@@ -1,17 +1,53 @@
 import 'package:flutter/material.dart';
 import '../design_system/app_colors.dart';
+import 'settings_detail_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  Future<void> _handleRefresh() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
+                'Profile refreshed!',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.accentGreen,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: AppColors.primaryBlue,
+          backgroundColor: Colors.white,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
             // Profile Header
             Container(
               decoration: const BoxDecoration(
@@ -344,17 +380,50 @@ class ProfileScreen extends StatelessWidget {
                       _SettingsItem(
                         icon: Icons.person_outline,
                         title: 'Personal Information',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Personal Information',
+                                icon: Icons.person_outline,
+                                settingType: 'personal_info',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.verified_user_outlined,
                         title: 'KYC Verification',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'KYC Verification',
+                                icon: Icons.verified_user_outlined,
+                                settingType: 'kyc',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.attach_money,
                         title: 'Currency Settings',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Currency Settings',
+                                icon: Icons.attach_money,
+                                settingType: 'currency',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -372,17 +441,50 @@ class ProfileScreen extends StatelessWidget {
                       _SettingsItem(
                         icon: Icons.lock_outline,
                         title: 'Change Password',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Change Password',
+                                icon: Icons.lock_outline,
+                                settingType: 'password',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.fingerprint,
                         title: 'Biometric Login',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Biometric Login',
+                                icon: Icons.fingerprint,
+                                settingType: 'biometric',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.security,
                         title: 'Two-Factor Auth',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Two-Factor Auth',
+                                icon: Icons.security,
+                                settingType: 'two_factor',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -400,17 +502,50 @@ class ProfileScreen extends StatelessWidget {
                       _SettingsItem(
                         icon: Icons.notifications_outlined,
                         title: 'Notifications',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Notifications',
+                                icon: Icons.notifications_outlined,
+                                settingType: 'notifications',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.language,
                         title: 'Language',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Language',
+                                icon: Icons.language,
+                                settingType: 'language',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.auto_awesome,
                         title: 'AI Preferences',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'AI Preferences',
+                                icon: Icons.auto_awesome,
+                                settingType: 'ai_preferences',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -428,22 +563,66 @@ class ProfileScreen extends StatelessWidget {
                       _SettingsItem(
                         icon: Icons.help_outline,
                         title: 'Help Center',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Help Center',
+                                icon: Icons.help_outline,
+                                settingType: 'help',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.privacy_tip_outlined,
                         title: 'Privacy Policy',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Privacy Policy',
+                                icon: Icons.privacy_tip_outlined,
+                                settingType: 'privacy',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.description_outlined,
                         title: 'Terms of Service',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'Terms of Service',
+                                icon: Icons.description_outlined,
+                                settingType: 'terms',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       _SettingsItem(
                         icon: Icons.info_outline,
                         title: 'About',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SettingsDetailScreen(
+                                title: 'About',
+                                icon: Icons.info_outline,
+                                settingType: 'about',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -452,6 +631,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           ],
+          ),
         ),
       ),
     );

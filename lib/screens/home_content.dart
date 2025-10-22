@@ -4,11 +4,13 @@ import '../data/mock_data.dart';
 import '../widgets/wallet_card.dart';
 import 'send_money_screen.dart';
 import 'receive_money_screen.dart';
-import 'ai_insights_screen.dart';
 import 'topup_screen.dart';
 import 'scan_screen.dart';
+import 'mini_program_screen.dart';
+import 'more_programs_screen.dart';
+import 'wallet_detail_screen.dart';
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   final String selectedCurrency;
   final VoidCallback onCurrencyTap;
   final VoidCallback? onNavigateToAIInsights;
@@ -21,11 +23,79 @@ class HomeContent extends StatelessWidget {
   });
 
   @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  
+  // Smooth page transition helper
+  void _navigateWithAnimation(BuildContext context, Widget page) {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => page,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 0.05);
+          const end = Offset.zero;
+          const curve = Curves.easeOutCubic;
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+          var offsetAnimation = animation.drive(tween);
+          var fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOut),
+          );
+          return FadeTransition(
+            opacity: fadeAnimation,
+            child: SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 350),
+      ),
+    );
+  }
+  
+  Future<void> _handleRefresh() async {
+    // Simulate refresh delay
+    await Future.delayed(const Duration(milliseconds: 1500));
+    // In a real app, this would reload data from API
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
+                'Refreshed successfully!',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.accentGreen,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final wallets = MockData.getWallets();
 
-    return CustomScrollView(
-      slivers: [
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      color: AppColors.primaryBlue,
+      backgroundColor: Colors.white,
+      child: CustomScrollView(
+        slivers: [
         SliverAppBar(
           expandedHeight: 120,
           floating: true,
@@ -68,7 +138,7 @@ class HomeContent extends StatelessWidget {
                           Row(
                             children: [
                               GestureDetector(
-                                onTap: onCurrencyTap,
+                                onTap: widget.onCurrencyTap,
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
@@ -84,7 +154,7 @@ class HomeContent extends StatelessWidget {
                                   child: Row(
                                     children: [
                                       Text(
-                                        selectedCurrency,
+                                        widget.selectedCurrency,
                                         style: const TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
@@ -130,7 +200,14 @@ class HomeContent extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   children: [
                     // Wallet Cards
-                    ...wallets.map((wallet) => WalletCard(wallet: wallet)),
+                    ...wallets.map((wallet) => WalletCard(
+                      wallet: wallet,
+                      displayCurrency: widget.selectedCurrency,
+                      onTap: () => _navigateWithAnimation(
+                        context,
+                        WalletDetailScreen(wallet: wallet),
+                      ),
+                    )),
                     // Bound Cards
                     _BoundCardWidget(
                       cardNumber: '**** **** **** 4532',
@@ -203,11 +280,9 @@ class HomeContent extends StatelessWidget {
                       label: 'Transfer',
                       color: AppColors.accentRed,
                       onTap: () {
-                        Navigator.push(
+                        _navigateWithAnimation(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const SendMoneyScreen(),
-                          ),
+                          const SendMoneyScreen(),
                         );
                       },
                     ),
@@ -216,11 +291,9 @@ class HomeContent extends StatelessWidget {
                       label: 'Receive',
                       color: AppColors.accentGreen,
                       onTap: () {
-                        Navigator.push(
+                        _navigateWithAnimation(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ReceiveMoneyScreen(),
-                          ),
+                          const ReceiveMoneyScreen(),
                         );
                       },
                     ),
@@ -229,11 +302,9 @@ class HomeContent extends StatelessWidget {
                       label: 'Scan',
                       color: AppColors.primaryBlue,
                       onTap: () {
-                        Navigator.push(
+                        _navigateWithAnimation(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const ScanScreen(),
-                          ),
+                          const ScanScreen(),
                         );
                       },
                     ),
@@ -252,8 +323,8 @@ class HomeContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: GestureDetector(
                   onTap: () {
-                    if (onNavigateToAIInsights != null) {
-                      onNavigateToAIInsights!();
+                    if (widget.onNavigateToAIInsights != null) {
+                      widget.onNavigateToAIInsights!();
                     }
                   },
                   child: Container(
@@ -344,41 +415,135 @@ class HomeContent extends StatelessWidget {
                       icon: Icons.shopping_bag,
                       label: 'Shop',
                       color: AppColors.accentOrange,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Shop',
+                            icon: Icons.shopping_bag,
+                            programType: 'shop',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.directions_car,
                       label: 'Ride',
                       color: AppColors.accentGreen,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Ride',
+                            icon: Icons.directions_car,
+                            programType: 'ride',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.restaurant,
                       label: 'Food',
                       color: AppColors.accentRed,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Food',
+                            icon: Icons.restaurant,
+                            programType: 'food',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.local_movies,
                       label: 'Movies',
                       color: AppColors.accentPurple,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Movies',
+                            icon: Icons.local_movies,
+                            programType: 'movies',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.phone_android,
                       label: 'Mobile',
                       color: AppColors.primaryBlue,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Mobile Recharge',
+                            icon: Icons.phone_android,
+                            programType: 'mobile',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.hotel,
                       label: 'Hotels',
                       color: AppColors.accentOrange,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Hotels',
+                            icon: Icons.hotel,
+                            programType: 'hotels',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.flight,
                       label: 'Flights',
                       color: AppColors.accentGreen,
+                      onTap: () {
+                        _navigateWithAnimation(
+                          context,
+                          const MiniProgramScreen(
+                            title: 'Flights',
+                            icon: Icons.flight,
+                            programType: 'flights',
+                          ),
+                        );
+                      },
                     ),
                     _MiniProgramItem(
                       icon: Icons.more_horiz,
                       label: 'More',
                       color: AppColors.textSecondary,
+                      heroTag: 'more_icon',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                const MoreProgramsScreen(),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOutCubic;
+                              var tween = Tween(begin: begin, end: end).chain(
+                                CurveTween(curve: curve),
+                              );
+                              var offsetAnimation = animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                            transitionDuration: const Duration(milliseconds: 400),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -388,6 +553,7 @@ class HomeContent extends StatelessWidget {
           ),
         ),
       ],
+      ),
     );
   }
 
@@ -409,7 +575,7 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-class _QuickActionButton extends StatelessWidget {
+class _QuickActionButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final Color color;
@@ -423,78 +589,174 @@ class _QuickActionButton extends StatelessWidget {
   });
 
   @override
+  State<_QuickActionButton> createState() => _QuickActionButtonState();
+}
+
+class _QuickActionButtonState extends State<_QuickActionButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.90).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Column(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    widget.color.withOpacity(0.15),
+                    widget.color.withOpacity(0.08),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.color.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(widget.icon, color: widget.color, size: 30),
             ),
-            child: Icon(icon, color: color, size: 28),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+            const SizedBox(height: 10),
+            Text(
+              widget.label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+                letterSpacing: 0.2,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _MiniProgramItem extends StatelessWidget {
+class _MiniProgramItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final Color color;
+  final VoidCallback? onTap;
+  final String? heroTag;
 
   const _MiniProgramItem({
     required this.icon,
     required this.label,
     required this.color,
+    this.onTap,
+    this.heroTag,
   });
 
   @override
+  State<_MiniProgramItem> createState() => _MiniProgramItemState();
+}
+
+class _MiniProgramItemState extends State<_MiniProgramItem> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Widget iconWidget = Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: widget.color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(widget.icon, color: widget.color, size: 24),
+    );
+
+    if (widget.heroTag != null) {
+      iconWidget = Hero(
+        tag: widget.heroTag!,
+        child: iconWidget,
+      );
+    }
+
     return GestureDetector(
-      onTap: () {},
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
+      onTapDown: (_) => _controller.forward(),
+      onTapUp: (_) {
+        _controller.reverse();
+        if (widget.onTap != null) widget.onTap!();
+      },
+      onTapCancel: () => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            iconWidget,
+            const SizedBox(height: 4),
+            Flexible(
+              child: Text(
+                widget.label,
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

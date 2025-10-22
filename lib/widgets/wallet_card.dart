@@ -2,21 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/wallet.dart';
 import '../design_system/app_colors.dart';
+import '../utils/currency_converter.dart';
 
 class WalletCard extends StatelessWidget {
   final Wallet wallet;
   final VoidCallback? onTap;
+  final String? displayCurrency;
 
   const WalletCard({
     super.key,
     required this.wallet,
     this.onTap,
+    this.displayCurrency,
   });
 
   @override
   Widget build(BuildContext context) {
+    final targetCurrency = displayCurrency ?? wallet.currency;
+    
+    // Convert balance if needed
+    double displayBalance = wallet.balance;
+    if (wallet.currency != 'BTC' && targetCurrency != wallet.currency) {
+      displayBalance = CurrencyConverter.convertBetween(
+        wallet.balance,
+        'USD', // Assuming wallet balance is in USD
+        targetCurrency,
+      );
+    }
+    
     final currencyFormat = NumberFormat.currency(
-      symbol: wallet.currency == 'BTC' ? '₿' : '\$',
+      symbol: wallet.currency == 'BTC' 
+          ? '₿' 
+          : CurrencyConverter.getSymbol(targetCurrency),
       decimalDigits: wallet.currency == 'BTC' ? 4 : 2,
     );
 
@@ -100,7 +117,7 @@ class WalletCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    currencyFormat.format(wallet.balance),
+                    currencyFormat.format(displayBalance),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,

@@ -28,6 +28,32 @@ class _TransactionsScreenState extends State<TransactionsScreen>
     super.dispose();
   }
 
+  Future<void> _handleRefresh() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 12),
+              Text(
+                'Transactions refreshed!',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          backgroundColor: AppColors.accentGreen,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,30 +123,35 @@ class _TransactionsScreenState extends State<TransactionsScreen>
 
   Widget _buildTransactionsList() {
     final transactions = MockData.getTransactions();
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      itemCount: transactions.length,
-      itemBuilder: (context, index) {
-        final transaction = transactions[index];
-        return TransactionListItem(
-          transaction: transaction,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TransactionDetailScreen(
-                  transaction: {
-                    'name': transaction.title,
-                    'amount': transaction.amount,
-                    'date': '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
-                    'category': transaction.subtitle,
-                  },
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      color: AppColors.primaryBlue,
+      backgroundColor: Colors.white,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        itemCount: transactions.length,
+        itemBuilder: (context, index) {
+          final transaction = transactions[index];
+          return TransactionListItem(
+            transaction: transaction,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TransactionDetailScreen(
+                    transaction: {
+                      'name': transaction.title,
+                      'amount': transaction.amount,
+                      'date': '${transaction.date.day}/${transaction.date.month}/${transaction.date.year}',
+                      'category': transaction.subtitle,
+                    },
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
