@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart' as flutter_svg;
 import '../design_system/app_colors.dart';
 import '../widgets/ai_chatbot_widget.dart';
 
@@ -2255,6 +2256,14 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
   Widget _buildRideServiceCard(String name, String id, Color color, IconData icon) {
     final bool isSelected = _selectedPlatform == id;
     
+    // Map service logos
+    String? logoAsset;
+    if (id == 'grab') {
+      logoAsset = 'assets/images/grab.png';
+    } else if (id == 'uber') {
+      logoAsset = 'assets/images/uber.svg';
+    }
+    
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -2283,13 +2292,40 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              size: 28,
-              color: isSelected 
-                  ? Colors.white 
-                  : (color == const Color(0xFF000000) ? Colors.black : color),
-            ),
+            logoAsset != null
+                ? SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: logoAsset.endsWith('.svg')
+                        ? flutter_svg.SvgPicture.asset(
+                            logoAsset,
+                            colorFilter: isSelected 
+                                ? const ColorFilter.mode(Colors.white, BlendMode.srcIn)
+                                : null,
+                            fit: BoxFit.contain,
+                          )
+                        : Image.asset(
+                            logoAsset,
+                            color: isSelected ? Colors.white : null,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                icon,
+                                size: 28,
+                                color: isSelected 
+                                    ? Colors.white 
+                                    : (color == const Color(0xFF000000) ? Colors.black : color),
+                              );
+                            },
+                          ),
+                  )
+                : Icon(
+                    icon,
+                    size: 28,
+                    color: isSelected 
+                        ? Colors.white 
+                        : (color == const Color(0xFF000000) ? Colors.black : color),
+                  ),
             const SizedBox(height: 8),
             Text(
               name,
@@ -2533,6 +2569,14 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
   Widget _buildHotelPlatformCard(String name, String id, Color color, IconData icon) {
     final bool isSelected = _selectedPlatform == id;
     
+    // Map booking service logos
+    String? logoAsset;
+    if (id == 'booking') {
+      logoAsset = 'assets/images/booking.jpg';
+    } else if (id == 'agoda') {
+      logoAsset = 'assets/images/agoda.png';
+    }
+    
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -2561,11 +2605,28 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              size: 28,
-              color: isSelected ? Colors.white : color,
-            ),
+            logoAsset != null
+                ? SizedBox(
+                    width: 32,
+                    height: 32,
+                    child: Image.asset(
+                      logoAsset,
+                      color: isSelected ? Colors.white : null,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          icon,
+                          size: 28,
+                          color: isSelected ? Colors.white : color,
+                        );
+                      },
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    size: 28,
+                    color: isSelected ? Colors.white : color,
+                  ),
             const SizedBox(height: 8),
             Text(
               name,

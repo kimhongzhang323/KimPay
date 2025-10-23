@@ -797,26 +797,44 @@ class _TopUpSheet extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           ...[
-            {'name': 'Bank Transfer', 'icon': 'bank'},
-            {'name': 'Touch \'n Go', 'icon': 'touchngo'},
-            {'name': 'Boost', 'icon': 'boost'},
-            {'name': 'Alipay', 'icon': 'alipay'},
-            {'name': 'WeChat Pay', 'icon': 'wechat'},
-            {'name': 'Apple Pay', 'icon': 'apple'},
+            {'name': 'Bank Transfer', 'icon': 'bank', 'logo': null},
+            {'name': 'Touch \'n Go', 'icon': 'touchngo', 'logo': 'assets/images/touchngo.png'},
+            {'name': 'Boost', 'icon': 'boost', 'logo': 'assets/images/boost.png'},
+            {'name': 'Alipay', 'icon': 'alipay', 'logo': 'assets/images/alipay.png'},
+            {'name': 'WeChat Pay', 'icon': 'wechat', 'logo': 'assets/images/wechatpay.png'},
+            {'name': 'PayPal', 'icon': 'paypal', 'logo': 'assets/images/paypal.png'},
           ].map((method) {
             return ListTile(
               leading: Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withOpacity(0.1),
+                  color: method['logo'] != null 
+                      ? Colors.white 
+                      : AppColors.primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
+                  border: method['logo'] != null 
+                      ? Border.all(color: AppColors.divider, width: 0.5)
+                      : null,
                 ),
-                child: Icon(
-                  _getPaymentIcon(method['icon']!),
-                  color: AppColors.primaryBlue,
-                  size: 20,
-                ),
+                padding: method['logo'] != null ? const EdgeInsets.all(6) : null,
+                child: method['logo'] != null
+                    ? Image.asset(
+                        method['logo']!,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            _getPaymentIcon(method['icon']!),
+                            color: AppColors.primaryBlue,
+                            size: 20,
+                          );
+                        },
+                      )
+                    : Icon(
+                        _getPaymentIcon(method['icon']!),
+                        color: AppColors.primaryBlue,
+                        size: 20,
+                      ),
               ),
               title: Text(method['name']!),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -1007,14 +1025,129 @@ class _AddCardSheetState extends State<_AddCardSheet> {
   final _cardHolderController = TextEditingController();
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
-
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _billingAddressController = TextEditingController();
+  final _postalCodeController = TextEditingController();
+  final _otpController = TextEditingController();
+  
+  int _currentStep = 0;
+  String _verificationType = 'SMS'; // SMS or Email
+  bool _isOtpSent = false;
+  bool _isVerifying = false;
+  int _otpTimer = 60;
+  
   @override
   void dispose() {
     _cardNumberController.dispose();
     _cardHolderController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _billingAddressController.dispose();
+    _postalCodeController.dispose();
+    _otpController.dispose();
     super.dispose();
+  }
+  
+  void _sendOtp() {
+    setState(() {
+      _isOtpSent = true;
+      _otpTimer = 60;
+    });
+    
+    // Simulate OTP sending
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Verification code sent to ${_verificationType == 'SMS' ? _phoneController.text : _emailController.text}',
+        ),
+        backgroundColor: AppColors.accentGreen,
+      ),
+    );
+    
+    // Start countdown timer
+    Future.delayed(const Duration(seconds: 1), _decrementTimer);
+  }
+  
+  void _decrementTimer() {
+    if (_otpTimer > 0) {
+      setState(() {
+        _otpTimer--;
+      });
+      Future.delayed(const Duration(seconds: 1), _decrementTimer);
+    }
+  }
+  
+  Future<void> _verifyAndAddCard() async {
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() {
+      _isVerifying = true;
+    });
+    
+    // Simulate verification delay
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (!mounted) return;
+    
+    Navigator.pop(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 12),
+            Text('Card verified and added successfully!'),
+          ],
+        ),
+        backgroundColor: AppColors.accentGreen,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+  
+  String? _validateCardNumber(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter card number';
+    }
+    String cleaned = value.replaceAll(' ', '');
+    if (cleaned.length < 13 || cleaned.length > 19) {
+      return 'Invalid card number';
+    }
+    return null;
+  }
+  
+  String? _validateExpiry(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Required';
+    }
+    if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(value)) {
+      return 'Format: MM/YY';
+    }
+    return null;
+  }
+  
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter email';
+    }
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      return 'Invalid email format';
+    }
+    return null;
+  }
+  
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter phone number';
+    }
+    String cleaned = value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cleaned.length < 9 || cleaned.length > 15) {
+      return 'Invalid phone number';
+    }
+    return null;
   }
 
   @override
@@ -1047,123 +1180,538 @@ class _AddCardSheetState extends State<_AddCardSheet> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Add New Card',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Enter your card details to link it to your wallet',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _cardNumberController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Card Number',
-                    hintText: '1234 5678 9012 3456',
-                    prefixIcon: Icon(Icons.credit_card),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                    ),
-                  ),
-                  maxLength: 19,
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _cardHolderController,
-                  textCapitalization: TextCapitalization.characters,
-                  decoration: const InputDecoration(
-                    labelText: 'Card Holder Name',
-                    hintText: 'JOHN DOE',
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                
+                // Progress Indicator
                 Row(
                   children: [
+                    _buildStepIndicator(0, 'Card Details'),
                     Expanded(
-                      child: TextFormField(
-                        controller: _expiryController,
-                        keyboardType: TextInputType.datetime,
-                        decoration: const InputDecoration(
-                          labelText: 'Expiry Date',
-                          hintText: 'MM/YY',
-                          prefixIcon: Icon(Icons.calendar_today),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                          ),
-                        ),
-                        maxLength: 5,
+                      child: Container(
+                        height: 2,
+                        color: _currentStep > 0 ? AppColors.primaryBlue : Colors.grey[300],
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    _buildStepIndicator(1, 'Billing Info'),
                     Expanded(
-                      child: TextFormField(
-                        controller: _cvvController,
-                        keyboardType: TextInputType.number,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          labelText: 'CVV',
-                          hintText: '123',
-                          prefixIcon: Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                          ),
-                        ),
-                        maxLength: 3,
+                      child: Container(
+                        height: 2,
+                        color: _currentStep > 1 ? AppColors.primaryBlue : Colors.grey[300],
                       ),
                     ),
+                    _buildStepIndicator(2, 'Verify'),
                   ],
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Card added successfully!'),
-                            backgroundColor: AppColors.accentGreen,
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      'Add Card',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                
+                // Step Content
+                if (_currentStep == 0) _buildCardDetailsStep(),
+                if (_currentStep == 1) _buildBillingInfoStep(),
+                if (_currentStep == 2) _buildVerificationStep(),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+  
+  Widget _buildStepIndicator(int step, String label) {
+    final isActive = _currentStep == step;
+    final isCompleted = _currentStep > step;
+    
+    return Column(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: isCompleted
+                ? AppColors.accentGreen
+                : isActive
+                    ? AppColors.primaryBlue
+                    : Colors.grey[300],
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: isCompleted
+                ? const Icon(Icons.check, color: Colors.white, size: 16)
+                : Text(
+                    '${step + 1}',
+                    style: TextStyle(
+                      color: isActive ? Colors.white : Colors.grey[600],
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: isActive ? AppColors.primaryBlue : Colors.grey[600],
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildCardDetailsStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Card Details',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Enter your credit or debit card information',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        
+        TextFormField(
+          controller: _cardNumberController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Card Number',
+            hintText: '1234 5678 9012 3456',
+            prefixIcon: Icon(Icons.credit_card),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          validator: _validateCardNumber,
+          maxLength: 19,
+        ),
+        const SizedBox(height: 16),
+        
+        TextFormField(
+          controller: _cardHolderController,
+          textCapitalization: TextCapitalization.characters,
+          decoration: const InputDecoration(
+            labelText: 'Card Holder Name',
+            hintText: 'JOHN DOE',
+            prefixIcon: Icon(Icons.person),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          validator: (value) => value?.isEmpty ?? true ? 'Please enter name' : null,
+        ),
+        const SizedBox(height: 16),
+        
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _expiryController,
+                keyboardType: TextInputType.datetime,
+                decoration: const InputDecoration(
+                  labelText: 'Expiry Date',
+                  hintText: 'MM/YY',
+                  prefixIcon: Icon(Icons.calendar_today),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                ),
+                validator: _validateExpiry,
+                maxLength: 5,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: TextFormField(
+                controller: _cvvController,
+                keyboardType: TextInputType.number,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'CVV',
+                  hintText: '123',
+                  prefixIcon: Icon(Icons.lock),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                ),
+                validator: (value) => (value?.length ?? 0) < 3 ? 'Invalid CVV' : null,
+                maxLength: 4,
+              ),
+            ),
+          ],
+        ),
+        
+        const SizedBox(height: 24),
+        
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                setState(() {
+                  _currentStep = 1;
+                });
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text(
+              'Continue',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+  
+  Widget _buildBillingInfoStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Billing Information',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Required for card verification',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        
+        TextFormField(
+          controller: _phoneController,
+          keyboardType: TextInputType.phone,
+          decoration: const InputDecoration(
+            labelText: 'Phone Number',
+            hintText: '+60 12-345 6789',
+            prefixIcon: Icon(Icons.phone),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          validator: _validatePhone,
+        ),
+        const SizedBox(height: 16),
+        
+        TextFormField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: const InputDecoration(
+            labelText: 'Email Address',
+            hintText: 'john.doe@example.com',
+            prefixIcon: Icon(Icons.email),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          validator: _validateEmail,
+        ),
+        const SizedBox(height: 16),
+        
+        TextFormField(
+          controller: _billingAddressController,
+          textCapitalization: TextCapitalization.words,
+          maxLines: 2,
+          decoration: const InputDecoration(
+            labelText: 'Billing Address',
+            hintText: '123 Main Street, City',
+            prefixIcon: Icon(Icons.home),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          validator: (value) => value?.isEmpty ?? true ? 'Please enter address' : null,
+        ),
+        const SizedBox(height: 16),
+        
+        TextFormField(
+          controller: _postalCodeController,
+          keyboardType: TextInputType.number,
+          decoration: const InputDecoration(
+            labelText: 'Postal Code',
+            hintText: '50000',
+            prefixIcon: Icon(Icons.pin_drop),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+          ),
+          validator: (value) => value?.isEmpty ?? true ? 'Please enter postal code' : null,
+        ),
+        
+        const SizedBox(height: 24),
+        
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    _currentStep = 0;
+                  });
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryBlue,
+                  side: const BorderSide(color: AppColors.primaryBlue),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text('Back'),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      _currentStep = 2;
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+  
+  Widget _buildVerificationStep() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Verification',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Verify your identity to complete card registration',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        
+        // Verification Method Selection
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              RadioListTile<String>(
+                value: 'SMS',
+                groupValue: _verificationType,
+                onChanged: (value) {
+                  setState(() {
+                    _verificationType = value!;
+                    _isOtpSent = false;
+                  });
+                },
+                title: const Text('SMS OTP'),
+                subtitle: Text(_phoneController.text),
+                secondary: const Icon(Icons.message),
+              ),
+              Divider(height: 1, color: Colors.grey[300]),
+              RadioListTile<String>(
+                value: 'Email',
+                groupValue: _verificationType,
+                onChanged: (value) {
+                  setState(() {
+                    _verificationType = value!;
+                    _isOtpSent = false;
+                  });
+                },
+                title: const Text('Email OTP'),
+                subtitle: Text(_emailController.text),
+                secondary: const Icon(Icons.email),
+              ),
+            ],
+          ),
+        ),
+        
+        const SizedBox(height: 24),
+        
+        // OTP Input (shown after sending)
+        if (_isOtpSent) ...[
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.primaryBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: AppColors.primaryBlue),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Enter the 6-digit code sent to your ${_verificationType.toLowerCase()}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.primaryBlue,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          TextFormField(
+            controller: _otpController,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 8,
+            ),
+            decoration: const InputDecoration(
+              labelText: 'Verification Code',
+              hintText: '000000',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+            ),
+            validator: (value) => (value?.length ?? 0) != 6 ? 'Enter 6-digit code' : null,
+            maxLength: 6,
+          ),
+          
+          const SizedBox(height: 16),
+          
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _otpTimer > 0 ? 'Code expires in $_otpTimer seconds' : 'Code expired',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: _otpTimer > 0 ? AppColors.textSecondary : Colors.red,
+                ),
+              ),
+              TextButton(
+                onPressed: _otpTimer == 0 ? _sendOtp : null,
+                child: const Text('Resend Code'),
+              ),
+            ],
+          ),
+        ],
+        
+        const SizedBox(height: 24),
+        
+        // Action Buttons
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _isVerifying ? null : () {
+                  setState(() {
+                    _currentStep = 1;
+                    _isOtpSent = false;
+                  });
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryBlue,
+                  side: const BorderSide(color: AppColors.primaryBlue),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text('Back'),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: _isVerifying
+                    ? null
+                    : _isOtpSent
+                        ? _verifyAndAddCard
+                        : _sendOtp,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: _isVerifying
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Text(
+                        _isOtpSent ? 'Verify & Add Card' : 'Send Verification Code',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+      ],
     );
   }
 }

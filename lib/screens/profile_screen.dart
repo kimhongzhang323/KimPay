@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../design_system/app_colors.dart';
 import 'settings_detail_screen.dart';
+import 'pin_setup_screen.dart';
+import 'pin_verify_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -65,8 +67,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: Colors.white,
                     child: CircleAvatar(
                       radius: 46,
-                      backgroundImage: NetworkImage(
-                        'https://i.pravatar.cc/300',
+                      backgroundImage: AssetImage(
+                        'assets/images/profile.jpg',
                       ),
                     ),
                   ),
@@ -438,6 +440,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   _SettingsCard(
                     items: [
+                      _SettingsItem(
+                        icon: Icons.pin,
+                        title: 'Change PIN',
+                        onTap: () {
+                          // Verify current PIN before allowing change
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PinVerifyScreen(
+                                canGoBack: true,
+                                onSuccess: () {
+                                  // After successful verification, go to PIN setup
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const PinSetupScreen(
+                                        isChangingPin: true,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                       _SettingsItem(
                         icon: Icons.lock_outline,
                         title: 'Change Password',

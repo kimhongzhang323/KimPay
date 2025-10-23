@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import '../design_system/app_colors.dart';
+import '../services/pin_service.dart';
 import 'dashboard_screen.dart';
+import 'pin_setup_screen.dart';
+import 'pin_verify_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -90,25 +93,63 @@ class _SplashScreenState extends State<SplashScreen>
     _rippleController.repeat();
 
     // Navigate after delay
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      _fadeController.forward().then((_) {
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  const DashboardScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
-              transitionDuration: const Duration(milliseconds: 500),
-            ),
-          );
-        }
-      });
+    Future.delayed(const Duration(milliseconds: 2500), () async {
+      // Check if PIN is set up
+      final isPinSet = await PinService.isPinSet();
+      
+      await _fadeController.forward();
+      
+      if (!mounted) return;
+      
+      if (isPinSet) {
+        // PIN exists - show verification screen
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                PinVerifyScreen(
+                  onSuccess: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const DashboardScreen(),
+                      ),
+                    );
+                  },
+                ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        );
+      } else {
+        // No PIN - show setup screen
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                PinSetupScreen(
+                  onPinSetup: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => const DashboardScreen(),
+                      ),
+                    );
+                  },
+                ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+            transitionDuration: const Duration(milliseconds: 500),
+          ),
+        );
+      }
     });
   }
 

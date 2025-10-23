@@ -74,6 +74,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "file",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/file-7.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "fl_chart",
       "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/fl_chart-0.69.2",
       "packageUri": "lib/",
@@ -284,6 +290,48 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "shared_preferences",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences-2.5.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.5"
+    },
+    {
+      "name": "shared_preferences_android",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_android-2.4.11",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "shared_preferences_foundation",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_foundation-2.5.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "shared_preferences_linux",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_linux-2.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "shared_preferences_platform_interface",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_platform_interface-2.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "shared_preferences_web",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_web-2.4.3",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "shared_preferences_windows",
+      "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shared_preferences_windows-2.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "shimmer",
       "rootUri": "file:///C:/Users/kimho/AppData/Local/Pub/Cache/hosted/pub.dev/shimmer-3.0.0",
       "packageUri": "lib/",
@@ -392,7 +440,7 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-10-22T13:51:26.466033Z",
+  "generated": "2025-10-23T16:18:24.139822Z",
   "generator": "pub",
   "generatorVersion": "3.6.2",
   "flutterRoot": "file:///C:/dev/flutter",

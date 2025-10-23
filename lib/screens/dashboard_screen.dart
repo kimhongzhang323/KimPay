@@ -15,8 +15,24 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
-  String selectedCurrency = 'USD';
+  String selectedRegion = 'MY'; // Malaysia
+  String selectedCurrency = 'MYR';
   late final List<Widget> _pages;
+
+  final Map<String, Map<String, String>> _regions = {
+    'MY': {'name': 'Malaysia', 'currency': 'MYR', 'flagCode': 'my'},
+    'US': {'name': 'United States', 'currency': 'USD', 'flagCode': 'us'},
+    'SG': {'name': 'Singapore', 'currency': 'SGD', 'flagCode': 'sg'},
+    'GB': {'name': 'United Kingdom', 'currency': 'GBP', 'flagCode': 'gb'},
+    'FR': {'name': 'France (EUR)', 'currency': 'EUR', 'flagCode': 'fr'},
+    'JP': {'name': 'Japan', 'currency': 'JPY', 'flagCode': 'jp'},
+    'CN': {'name': 'China', 'currency': 'CNY', 'flagCode': 'cn'},
+    'AU': {'name': 'Australia', 'currency': 'AUD', 'flagCode': 'au'},
+    'TH': {'name': 'Thailand', 'currency': 'THB', 'flagCode': 'th'},
+    'ID': {'name': 'Indonesia', 'currency': 'IDR', 'flagCode': 'id'},
+    'PH': {'name': 'Philippines', 'currency': 'PHP', 'flagCode': 'ph'},
+    'VN': {'name': 'Vietnam', 'currency': 'VND', 'flagCode': 'vn'},
+  };
 
   @override
   void initState() {
@@ -24,7 +40,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _pages = [
       HomeContent(
         selectedCurrency: selectedCurrency,
-        onCurrencyTap: () => _showCurrencyPicker(),
+        onCurrencyTap: () => _showRegionPicker(),
         onNavigateToAIInsights: () {
           setState(() {
             _selectedIndex = 3; // Navigate to AI Insights tab
@@ -38,10 +54,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ];
   }
 
-  void _showCurrencyPicker() {
+  void _showRegionPicker() {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (context) => Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -63,66 +80,141 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                'Select Currency',
+                'Select Region',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'Choose your region to see localized content',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
-            ...['USD', 'EUR', 'GBP', 'JPY', 'CNY', 'MYR', 'SGD', 'AUD']
-                .map((currency) => ListTile(
-                      leading: const Icon(Icons.attach_money),
-                      title: Text(_getCurrencyName(currency)),
-                      trailing: selectedCurrency == currency
-                          ? const Icon(Icons.check, color: AppColors.primaryBlue)
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          selectedCurrency = currency;
-                          _pages[0] = HomeContent(
-                            selectedCurrency: selectedCurrency,
-                            onCurrencyTap: () => _showCurrencyPicker(),
-                            onNavigateToAIInsights: () {
-                              setState(() {
-                                _selectedIndex = 3;
-                              });
-                            },
-                          );
-                        });
-                        Navigator.pop(context);
-                      },
-                    ))
-                .toList(),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+              ),
+              child: ListView(
+                shrinkWrap: true,
+                children: _regions.entries.map((entry) {
+                  final regionCode = entry.key;
+                  final regionData = entry.value;
+                  final isSelected = selectedRegion == regionCode;
+                  
+                  return ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: isSelected 
+                            ? AppColors.primaryBlue.withOpacity(0.1)
+                            : Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primaryBlue.withOpacity(0.3)
+                              : Colors.grey[300]!,
+                          width: 1,
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: Image.asset(
+                          'assets/images/countryFlag/${regionData['flagCode']}.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.flag,
+                              size: 20,
+                              color: AppColors.primaryBlue,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      regionData['name']!,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                    subtitle: Text(
+                      regionData['currency']!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    trailing: isSelected
+                        ? const Icon(Icons.check_circle, color: AppColors.primaryBlue)
+                        : null,
+                    onTap: () {
+                      setState(() {
+                        selectedRegion = regionCode;
+                        selectedCurrency = regionData['currency']!;
+                        _pages[0] = HomeContent(
+                          selectedCurrency: selectedCurrency,
+                          onCurrencyTap: () => _showRegionPicker(),
+                          onNavigateToAIInsights: () {
+                            setState(() {
+                              _selectedIndex = 3;
+                            });
+                          },
+                        );
+                      });
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: Image.asset(
+                                  'assets/images/countryFlag/${regionData['flagCode']}.png',
+                                  width: 24,
+                                  height: 24,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.flag,
+                                      size: 24,
+                                      color: Colors.white,
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text('Switched to ${regionData['name']}'),
+                            ],
+                          ),
+                          backgroundColor: AppColors.accentGreen,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
             const SizedBox(height: 24),
           ],
         ),
       ),
     );
-  }
-
-  String _getCurrencyName(String code) {
-    switch (code) {
-      case 'USD':
-        return 'US Dollar';
-      case 'EUR':
-        return 'Euro';
-      case 'GBP':
-        return 'British Pound';
-      case 'JPY':
-        return 'Japanese Yen';
-      case 'CNY':
-        return 'Chinese Yuan';
-      case 'MYR':
-        return 'Malaysian Ringgit';
-      case 'SGD':
-        return 'Singapore Dollar';
-      case 'AUD':
-        return 'Australian Dollar';
-      default:
-        return code;
-    }
   }
 
   @override

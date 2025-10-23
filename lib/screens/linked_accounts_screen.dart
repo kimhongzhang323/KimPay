@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import '../design_system/app_colors.dart';
 import '../data/linked_accounts_data.dart';
 import '../models/linked_account_models.dart';
+import 'account_detail_screen.dart';
+import 'add_account_method_screen.dart';
 
 class LinkedAccountsScreen extends StatefulWidget {
   const LinkedAccountsScreen({super.key});
@@ -87,14 +89,19 @@ class _LinkedAccountsScreenState extends State<LinkedAccountsScreen> {
   }
 
   void _showAccountDetails(LinkedAccount account) {
-    // TODO: Implement account details screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AccountDetailScreen(account: account),
+      ),
+    );
   }
 
   void _connectAccount(AvailableAccount account) {
-    // TODO: Implement account connection flow
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Connecting ${account.name}...'),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddAccountMethodScreen(account: account),
       ),
     );
   }
@@ -115,6 +122,26 @@ class _LinkedAccountCard extends StatelessWidget {
       symbol: account.currency == 'USD' ? '\$' : account.currency,
       decimalDigits: 2,
     );
+
+    // Map payment method logos
+    String? logoAsset;
+    switch (account.accountType.toLowerCase()) {
+      case 'touchngo':
+        logoAsset = 'assets/images/touchngo.png';
+        break;
+      case 'boost':
+        logoAsset = 'assets/images/boost.png';
+        break;
+      case 'alipay':
+        logoAsset = 'assets/images/alipay.png';
+        break;
+      case 'wechat':
+        logoAsset = 'assets/images/wechatpay.png';
+        break;
+      case 'paypal':
+        logoAsset = 'assets/images/paypal.png';
+        break;
+    }
 
     return GestureDetector(
       onTap: onTap,
@@ -137,15 +164,33 @@ class _LinkedAccountCard extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: logoAsset != null 
+                    ? Colors.white 
+                    : AppColors.primaryBlue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
+                border: logoAsset != null 
+                    ? Border.all(color: AppColors.divider, width: 0.5)
+                    : null,
               ),
+              padding: logoAsset != null ? const EdgeInsets.all(8) : null,
               child: Center(
-                child: Icon(
-                  _getAccountIcon(account.accountType),
-                  color: AppColors.primaryBlue,
-                  size: 28,
-                ),
+                child: logoAsset != null
+                    ? Image.asset(
+                        logoAsset,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            _getAccountIcon(account.accountType),
+                            color: AppColors.primaryBlue,
+                            size: 28,
+                          );
+                        },
+                      )
+                    : Icon(
+                        _getAccountIcon(account.accountType),
+                        color: AppColors.primaryBlue,
+                        size: 28,
+                      ),
               ),
             ),
             const SizedBox(width: 12),
@@ -261,6 +306,26 @@ class _AvailableAccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Map payment method logos
+    String? logoAsset;
+    switch (account.accountType.toLowerCase()) {
+      case 'touchngo':
+        logoAsset = 'assets/images/touchngo.png';
+        break;
+      case 'boost':
+        logoAsset = 'assets/images/boost.png';
+        break;
+      case 'alipay':
+        logoAsset = 'assets/images/alipay.png';
+        break;
+      case 'wechat':
+        logoAsset = 'assets/images/wechatpay.png';
+        break;
+      case 'paypal':
+        logoAsset = 'assets/images/paypal.png';
+        break;
+    }
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -279,14 +344,32 @@ class _AvailableAccountCard extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.1),
+                color: logoAsset != null 
+                    ? Colors.white 
+                    : AppColors.accentGreen.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
+                border: logoAsset != null 
+                    ? Border.all(color: AppColors.divider, width: 0.5)
+                    : null,
               ),
-              child: Icon(
-                _getAccountIcon(account.accountType),
-                color: AppColors.accentGreen,
-                size: 20,
-              ),
+              padding: logoAsset != null ? const EdgeInsets.all(6) : null,
+              child: logoAsset != null
+                  ? Image.asset(
+                      logoAsset,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          _getAccountIcon(account.accountType),
+                          color: AppColors.accentGreen,
+                          size: 20,
+                        );
+                      },
+                    )
+                  : Icon(
+                      _getAccountIcon(account.accountType),
+                      color: AppColors.accentGreen,
+                      size: 20,
+                    ),
             ),
             const SizedBox(width: 12),
             Expanded(

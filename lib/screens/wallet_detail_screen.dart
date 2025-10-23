@@ -994,6 +994,7 @@ class _TopUpSheetState extends State<_TopUpSheet> {
               subtitle: 'Linked Account',
               isSelected: _selectedSource == 'Touch n Go',
               onTap: () => setState(() => _selectedSource = 'Touch n Go'),
+              logoAsset: 'assets/images/touchngo.png',
             ),
             const SizedBox(height: 24),
             const Text(
@@ -1083,6 +1084,7 @@ class _SourceCard extends StatelessWidget {
   final String subtitle;
   final bool isSelected;
   final VoidCallback onTap;
+  final String? logoAsset;
 
   const _SourceCard({
     required this.icon,
@@ -1090,6 +1092,7 @@ class _SourceCard extends StatelessWidget {
     required this.subtitle,
     required this.isSelected,
     required this.onTap,
+    this.logoAsset,
   });
 
   @override
@@ -1118,10 +1121,25 @@ class _SourceCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.1),
+                    color: logoAsset != null 
+                        ? Colors.white 
+                        : AppColors.primaryBlue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
+                    border: logoAsset != null 
+                        ? Border.all(color: AppColors.divider, width: 0.5)
+                        : null,
                   ),
-                  child: Icon(icon, color: AppColors.primaryBlue, size: 20),
+                  child: logoAsset != null
+                      ? Image.asset(
+                          logoAsset!,
+                          width: 20,
+                          height: 20,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(icon, color: AppColors.primaryBlue, size: 20);
+                          },
+                        )
+                      : Icon(icon, color: AppColors.primaryBlue, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

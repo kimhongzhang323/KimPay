@@ -38,6 +38,11 @@ dependencies:
   
   # Internationalization
   intl: ^0.19.0
+  
+  # Storage & Security
+  shared_preferences: ^2.3.4
+  shared_preferences_web: ^2.4.2
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:
@@ -48,10 +53,21 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/
-  #   - assets/
+  # Assets
+  assets:
+    - assets/images/
+    - assets/images/countryFlag/my.png
+    - assets/images/countryFlag/us.png
+    - assets/images/countryFlag/sg.png
+    - assets/images/countryFlag/gb.png
+    - assets/images/countryFlag/fr.png
+    - assets/images/countryFlag/jp.png
+    - assets/images/countryFlag/cn.png
+    - assets/images/countryFlag/au.png
+    - assets/images/countryFlag/th.png
+    - assets/images/countryFlag/id.png
+    - assets/images/countryFlag/ph.png
+    - assets/images/countryFlag/vn.png
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
