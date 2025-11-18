@@ -142,12 +142,12 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                               decoration: BoxDecoration(
                                 color: widget.account.isVerified
                                     ? AppColors.accentGreen.withOpacity(0.2)
-                                    : Colors.orange.withOpacity(0.2),
+                                    : AppColors.accentOrange.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
                                   color: widget.account.isVerified
                                       ? AppColors.accentGreen
-                                      : Colors.orange,
+                                      : AppColors.accentOrange,
                                 ),
                               ),
                               child: Row(
@@ -159,7 +159,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                                         : Icons.warning,
                                     color: widget.account.isVerified
                                         ? AppColors.accentGreen
-                                        : Colors.orange,
+                                        : AppColors.accentOrange,
                                     size: 14,
                                   ),
                                   const SizedBox(width: 4),
@@ -168,8 +168,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                                     style: TextStyle(
                                       color: widget.account.isVerified
                                           ? AppColors.accentGreen
-                                          : Colors.orange,
-                                      fontSize: 11,
+                                          : AppColors.accentOrange,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -343,14 +343,14 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.warning, color: Colors.red, size: 20),
+                            Icon(Icons.warning, color: AppColors.accentRed, size: 20),
                             SizedBox(width: 8),
                             Text(
                               'Danger Zone',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: Colors.red,
+                                color: AppColors.accentRed,
                               ),
                             ),
                           ],
@@ -363,8 +363,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                               _showUnlinkDialog(context);
                             },
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.red,
-                              side: const BorderSide(color: Colors.red),
+                              foregroundColor: AppColors.accentRed,
+                              side: const BorderSide(color: AppColors.accentRed),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             icon: const Icon(Icons.link_off),
@@ -420,12 +420,12 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('${widget.account.name} unlinked successfully'),
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppColors.accentRed,
                 ),
               );
             },
             style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.accentRed,
             ),
             child: const Text('Unlink'),
           ),

@@ -91,10 +91,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
+                          gradient: LinearGradient(
                             colors: [
-                              Color(0xFFFFD700), // Gold
-                              Color(0xFFFFA500), // Orange gold
+                              AppColors.accentOrange,
+                              AppColors.accentOrange.withOpacity(0.7),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(12),

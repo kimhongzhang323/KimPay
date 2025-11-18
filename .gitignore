@@ -1,0 +1,88 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+**/.dart_tool/
+**/.dart_tool/**
+.dart_tool/chrome-device/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+**/.packages
+.packages
+pubspec.lock
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# CMake related (Windows, Linux, macOS builds)
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/compile_commands.json
+**/CTestTestfile.cmake
+**/*.cmake
+!**/CMakeLists.txt
+**/Makefile
+**/generated_plugins.cmake
+**/generated_plugin_registrant.cc
+**/generated_plugin_registrant.h
+
+# Windows build artifacts
+/windows/flutter/
+/windows/flutter/ephemeral/
+/windows/flutter/generated_plugin_registrant.cc
+/windows/flutter/generated_plugin_registrant.h
+/windows/flutter/generated_plugins.cmake
+windows/flutter/ephemeral/
+windows/flutter/generated_*
+
+# Linux build artifacts
+/linux/flutter/ephemeral/
+
+# macOS build artifacts
+/macos/Flutter/ephemeral/
+/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Chrome device lab
+.chrome-device/
+**/.chrome-device/
+
+/windows
+
+/.dart_tool/*

@@ -132,14 +132,7 @@ class _StockDetailScreenState extends State<StockDetailScreen> with SingleTicker
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primaryBlue,
-                AppColors.accentPurple,
-              ],
-            ),
+            gradient: AppColors.darkGradient,
           ),
           child: SafeArea(
             child: Padding(

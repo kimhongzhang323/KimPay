@@ -1638,7 +1638,7 @@ class _AddCardSheetState extends State<_AddCardSheet> {
                 _otpTimer > 0 ? 'Code expires in $_otpTimer seconds' : 'Code expired',
                 style: TextStyle(
                   fontSize: 12,
-                  color: _otpTimer > 0 ? AppColors.textSecondary : Colors.red,
+                  color: _otpTimer > 0 ? AppColors.textSecondary : AppColors.accentRed,
                 ),
               ),
               TextButton(

@@ -19,51 +19,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       icon: Icons.account_balance_wallet,
       title: 'Welcome to KimPay',
       description: 'Your smart digital wallet for seamless payments and financial management',
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-      ),
+      gradient: AppColors.primaryGradient,
     ),
     OnboardingPage(
       icon: Icons.auto_awesome,
       title: 'AI-Powered Insights',
       description: 'Get personalized financial insights and predictions powered by advanced AI',
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFFf093fb), Color(0xFFF5576C)],
-      ),
+      gradient: AppColors.accentGradient,
     ),
     OnboardingPage(
       icon: Icons.security,
       title: 'Secure & Private',
       description: 'Bank-level security with biometric authentication and encrypted transactions',
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
-      ),
+      gradient: AppColors.darkGradient,
     ),
     OnboardingPage(
       icon: Icons.shopping_bag,
       title: 'Integrated Services',
       description: 'Shop, travel, and pay bills - all in one app with the best prices',
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF43e97b), Color(0xFF38f9d7)],
-      ),
+      gradient: AppColors.lightGradient,
     ),
     OnboardingPage(
       icon: Icons.payments,
       title: 'Multi-Currency Support',
       description: 'Manage multiple wallets across different currencies with real-time conversion',
-      gradient: const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFFfa709a), Color(0xFFfee140)],
-      ),
+      gradient: AppColors.primaryGradient,
     ),
   ];
 

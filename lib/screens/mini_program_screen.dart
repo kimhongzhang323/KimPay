@@ -338,7 +338,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                 child: const Text(
                   'Shop Now',
                   style: TextStyle(
-                    color: Colors.red,
+                    color: AppColors.accentRed,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -670,13 +670,13 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                         top: 80,
                         child: Column(
                           children: [
-                            Icon(Icons.location_on, color: Colors.red, size: 32),
+                            Icon(Icons.location_on, color: AppColors.accentRed, size: 32),
                             Text(
                               'You',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.red,
+                                color: AppColors.accentRed,
                               ),
                             ),
                           ],
@@ -688,13 +688,13 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                         bottom: 50,
                         child: Column(
                           children: [
-                            Icon(Icons.location_on, color: Colors.blue, size: 32),
+                            Icon(Icons.location_on, color: AppColors.primaryBlue, size: 32),
                             Text(
                               'Destination',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.blue,
+                                color: AppColors.primaryBlue,
                               ),
                             ),
                           ],
@@ -1114,13 +1114,13 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                               top: 70,
                               child: Column(
                                 children: [
-                                  Icon(Icons.home, color: Colors.red, size: 28),
+                                  Icon(Icons.home, color: AppColors.accentRed, size: 28),
                                   Text(
                                     'Your Location',
                                     style: TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.red,
+                                      color: AppColors.accentRed,
                                       backgroundColor: Colors.white,
                                     ),
                                   ),
@@ -1137,7 +1137,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.restaurant, color: Colors.orange, size: 20),
+                                child: const Icon(Icons.restaurant, color: AppColors.accentOrange, size: 20),
                               ),
                             ),
                             Positioned(
@@ -1149,7 +1149,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.fastfood, color: Colors.orange, size: 20),
+                                child: const Icon(Icons.fastfood, color: AppColors.accentOrange, size: 20),
                               ),
                             ),
                             Positioned(
@@ -1161,7 +1161,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(Icons.local_pizza, color: Colors.orange, size: 20),
+                                child: const Icon(Icons.local_pizza, color: AppColors.accentOrange, size: 20),
                               ),
                             ),
                           ],
@@ -2110,7 +2110,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: AppColors.accentRed,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -2189,7 +2189,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
-                          color: Colors.red,
+                          color: AppColors.accentRed,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -2725,7 +2725,7 @@ class _MiniProgramScreenState extends State<MiniProgramScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: AppColors.accentGreen,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(

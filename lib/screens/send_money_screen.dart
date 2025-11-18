@@ -103,14 +103,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primaryBlue,
-                    AppColors.primaryBlue.withOpacity(0.8),
-                  ],
-                ),
+                gradient: AppColors.primaryGradient,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -737,7 +730,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                 gradient: LinearGradient(
                   colors: [
                     AppColors.primaryBlue.withOpacity(0.1),
-                    AppColors.accentPurple.withOpacity(0.1),
+                    AppColors.primaryLight.withOpacity(0.15),
                   ],
                 ),
                 shape: BoxShape.circle,
@@ -881,14 +874,7 @@ class _PlatformChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            gradient: isSelected
-                ? const LinearGradient(
-                    colors: [
-                      AppColors.primaryBlue,
-                      AppColors.accentPurple,
-                    ],
-                  )
-                : null,
+            gradient: isSelected ? AppColors.accentGradient : null,
             color: isSelected ? null : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(

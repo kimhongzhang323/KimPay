@@ -59,15 +59,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.primaryBlue,
-                      AppColors.primaryBlue.withOpacity(0.9),
-                      AppColors.accentPurple.withOpacity(0.7),
-                    ],
-                  ),
+                  gradient: AppColors.primaryGradient,
                 ),
                 child: SafeArea(
                   child: Column(
@@ -82,7 +74,7 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                           decoration: BoxDecoration(
                             gradient: widget.wallet.currency == 'USD'
                                 ? AppColors.primaryGradient
-                                : AppColors.orangeGradient,
+                                : AppColors.darkGradient,
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
@@ -252,17 +244,12 @@ class _WalletDetailScreenState extends State<WalletDetailScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.accentPurple.withOpacity(0.15),
-                                        AppColors.accentPurple.withOpacity(0.08),
-                                      ],
-                                    ),
+                                    color: AppColors.primaryDark.withOpacity(0.12),
                                     borderRadius: BorderRadius.circular(14),
                                   ),
                                   child: const Icon(
                                     Icons.autorenew_rounded,
-                                    color: AppColors.accentPurple,
+                                    color: AppColors.primaryDark,
                                     size: 24,
                                   ),
                                 ),

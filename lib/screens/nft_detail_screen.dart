@@ -113,14 +113,7 @@ class _NftDetailScreenState extends State<NftDetailScreen> {
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.accentPurple,
-                AppColors.primaryBlue,
-              ],
-            ),
+            gradient: AppColors.accentGradient,
           ),
         ),
         title: Text(

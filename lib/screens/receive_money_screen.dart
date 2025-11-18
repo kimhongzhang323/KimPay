@@ -51,14 +51,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primaryBlue,
-                  AppColors.primaryBlue.withOpacity(0.8),
-                ],
-              ),
+              gradient: AppColors.primaryGradient,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -277,12 +270,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.primaryBlue.withOpacity(0.1),
-                          AppColors.accentPurple.withOpacity(0.1),
-                        ],
-                      ),
+                      gradient: AppColors.lightGradient,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: QrImageView(
@@ -355,8 +343,8 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.accentGreen.withOpacity(0.1),
-                  AppColors.primaryBlue.withOpacity(0.1),
+                  AppColors.accentGreen.withOpacity(0.12),
+                  AppColors.primaryLight.withOpacity(0.12),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
@@ -373,12 +361,7 @@ class _ReceiveMoneyScreenState extends State<ReceiveMoneyScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.accentGreen,
-                            AppColors.primaryBlue,
-                          ],
-                        ),
+                        gradient: AppColors.accentGradient,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/pin_service.dart';
 import '../widgets/pin_input_widget.dart';
+import '../design_system/app_colors.dart';
 
 /// Screen for setting up a new 6-digit PIN
 class PinSetupScreen extends StatefulWidget {
@@ -70,7 +71,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               ? 'PIN changed successfully!' 
               : 'PIN set up successfully!',
           ),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.accentGreen,
         ),
       );
       
