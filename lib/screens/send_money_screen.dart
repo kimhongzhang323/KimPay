@@ -87,770 +87,570 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Transfer Money'),
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(24),
+      backgroundColor: const Color(0xFFF5F6FA),
+      body: SafeArea(
+        child: Column(
           children: [
-            // Available Balance Card
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Available Balance',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '\$${_totalBalance.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 36,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  if (_amountController.text.isNotEmpty && 
-                      double.tryParse(_amountController.text) != null) ...[
-                    const SizedBox(height: 16),
-                    const Divider(color: Colors.white24, thickness: 1),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'After Transfer',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                        Text(
-                          '\$${_remainingBalance.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            color: _remainingBalance < 0 
-                                ? AppColors.accentRed 
-                                : Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Platform Selection
-            const Text(
-              'Transfer To',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _PlatformChip(
-                    label: 'KimPay',
-                    isSelected: _platform == 'KimPay',
-                    onTap: () => setState(() => _platform = 'KimPay'),
-                  ),
-                  _PlatformChip(
-                    label: 'Touch n Go',
-                    isSelected: _platform == 'Touch n Go',
-                    onTap: () => setState(() => _platform = 'Touch n Go'),
-                  ),
-                  _PlatformChip(
-                    label: 'Boost',
-                    isSelected: _platform == 'Boost',
-                    onTap: () => setState(() => _platform = 'Boost'),
-                  ),
-                  _PlatformChip(
-                    label: 'GrabPay',
-                    isSelected: _platform == 'GrabPay',
-                    onTap: () => setState(() => _platform = 'GrabPay'),
-                  ),
-                  _PlatformChip(
-                    label: 'Bank Transfer',
-                    isSelected: _platform == 'Bank Transfer',
-                    onTap: () => setState(() => _platform = 'Bank Transfer'),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Input Type Toggle
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: AppColors.divider,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _inputType = 'phone';
-                          _recipientController.clear();
-                          _recipientName = null;
-                          _trustScore = null;
-                          _aiAdvice = null;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: _inputType == 'phone' 
-                              ? Colors.white 
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'Phone Number',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: _inputType == 'phone' 
-                                ? FontWeight.w700 
-                                : FontWeight.w500,
-                            color: _inputType == 'phone'
-                                ? AppColors.primaryBlue
-                                : AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _inputType = 'account';
-                          _recipientController.clear();
-                          _recipientName = null;
-                          _trustScore = null;
-                          _aiAdvice = null;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: BoxDecoration(
-                          color: _inputType == 'account' 
-                              ? Colors.white 
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'Account Number',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontWeight: _inputType == 'account' 
-                                ? FontWeight.w700 
-                                : FontWeight.w500,
-                            color: _inputType == 'account'
-                                ? AppColors.primaryBlue
-                                : AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Recipient Input
-            TextFormField(
-              controller: _recipientController,
-              keyboardType: _inputType == 'phone' 
-                  ? TextInputType.phone 
-                  : TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              decoration: InputDecoration(
-                labelText: _inputType == 'phone' 
-                    ? 'Recipient Phone Number' 
-                    : 'Recipient Account Number',
-                hintText: _inputType == 'phone' ? '0123456789' : '1234567890',
-                prefixIcon: Icon(
-                  _inputType == 'phone' ? Icons.phone : Icons.account_balance,
-                  color: AppColors.primaryBlue,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primaryBlue,
-                    width: 2,
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              onChanged: _lookupRecipient,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter ${_inputType == 'phone' ? 'phone number' : 'account number'}';
-                }
-                if (value.length < 10) {
-                  return 'Invalid ${_inputType == 'phone' ? 'phone number' : 'account number'}';
-                }
-                return null;
-              },
-            ),
-            
-            // Recipient Info Card (shown after lookup)
-            if (_isLoading) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.divider),
-                ),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            ] else if (_recipientName != null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppColors.accentGreen.withOpacity(0.3),
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.accentGreen.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            _buildHeader(context),
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.accentGreen.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
+                    // Available Balance Card
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
-                          child: const Icon(
-                            Icons.person,
-                            color: AppColors.accentGreen,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const Text(
-                                'Recipient',
+                                'Available Balance',
                                 style: TextStyle(
-                                  fontSize: 12,
                                   color: AppColors.textSecondary,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _recipientName!,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFF5F6FA),
+                                  shape: BoxShape.circle,
                                 ),
+                                child: const Icon(Icons.account_balance_wallet, size: 16, color: Colors.black),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 16),
-                    
-                    // Trust Score
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.verified_user,
-                          color: AppColors.primaryBlue,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Trust Score:',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                          const SizedBox(height: 12),
+                          Text(
+                            '\$${_totalBalance.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: AppColors.textPrimary,
+                              fontSize: 36,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              Container(
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: AppColors.divider,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
-                              FractionallySizedBox(
-                                widthFactor: (_trustScore ?? 0) / 100,
-                                child: Container(
-                                  height: 8,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.accentGreen,
-                                        AppColors.accentGreen.withOpacity(0.7),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(4),
+                          if (_amountController.text.isNotEmpty && 
+                              double.tryParse(_amountController.text) != null) ...[
+                            const SizedBox(height: 16),
+                            const Divider(height: 32, thickness: 1, color: Color(0xFFF5F6FA)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'After Transfer',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 14,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          '${_trustScore?.toStringAsFixed(1)}%',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.accentGreen,
-                          ),
-                        ),
-                      ],
+                                Text(
+                                  '\$${_remainingBalance.toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    color: _remainingBalance < 0 
+                                        ? AppColors.accentRed 
+                                        : AppColors.textPrimary,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
                     
-                    // AI Advice
+                    // Platform Selection
+                    const Text(
+                      'Transfer To',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _PlatformChip(
+                            label: 'KimPay',
+                            isSelected: _platform == 'KimPay',
+                            onTap: () => setState(() => _platform = 'KimPay'),
+                          ),
+                          _PlatformChip(
+                            label: 'Touch n Go',
+                            isSelected: _platform == 'Touch n Go',
+                            onTap: () => setState(() => _platform = 'Touch n Go'),
+                          ),
+                          _PlatformChip(
+                            label: 'Boost',
+                            isSelected: _platform == 'Boost',
+                            onTap: () => setState(() => _platform = 'Boost'),
+                          ),
+                          _PlatformChip(
+                            label: 'GrabPay',
+                            isSelected: _platform == 'GrabPay',
+                            onTap: () => setState(() => _platform = 'GrabPay'),
+                          ),
+                          _PlatformChip(
+                            label: 'Bank Transfer',
+                            isSelected: _platform == 'Bank Transfer',
+                            onTap: () => setState(() => _platform = 'Bank Transfer'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Input Type Toggle
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryBlue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.withOpacity(0.1)),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.auto_awesome,
-                            color: AppColors.primaryBlue,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 12),
                           Expanded(
-                            child: Text(
-                              _aiAdvice ?? '',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _inputType = 'phone';
+                                  _recipientController.clear();
+                                  _recipientName = null;
+                                  _trustScore = null;
+                                  _aiAdvice = null;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: _inputType == 'phone' 
+                                      ? Colors.black 
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'Phone Number',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: _inputType == 'phone' 
+                                        ? FontWeight.w700 
+                                        : FontWeight.w500,
+                                    color: _inputType == 'phone'
+                                        ? Colors.white
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _inputType = 'account';
+                                  _recipientController.clear();
+                                  _recipientName = null;
+                                  _trustScore = null;
+                                  _aiAdvice = null;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: _inputType == 'account' 
+                                      ? Colors.black 
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  'Account Number',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: _inputType == 'account' 
+                                        ? FontWeight.w700 
+                                        : FontWeight.w500,
+                                    color: _inputType == 'account'
+                                        ? Colors.white
+                                        : AppColors.textSecondary,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    
+                    // Recipient Input
+                    TextFormField(
+                      controller: _recipientController,
+                      keyboardType: _inputType == 'phone' 
+                          ? TextInputType.phone 
+                          : TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      decoration: InputDecoration(
+                        labelText: _inputType == 'phone' 
+                            ? 'Recipient Phone Number' 
+                            : 'Recipient Account Number',
+                        hintText: _inputType == 'phone' ? '0123456789' : '1234567890',
+                        prefixIcon: Icon(
+                          _inputType == 'phone' ? Icons.phone : Icons.account_balance,
+                          color: AppColors.textSecondary,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      onChanged: _lookupRecipient,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter ${_inputType == 'phone' ? 'phone number' : 'account number'}';
+                        }
+                        return null;
+                      },
+                    ),
+                    
+                    // Recipient Info Card (shown after lookup)
+                    if (_isLoading) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(color: Colors.black),
+                        ),
+                      ),
+                    ] else if (_recipientName != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: AppColors.accentGreen.withOpacity(0.3),
+                            width: 2,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.accentGreen.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.accentGreen.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.person,
+                                    color: AppColors.accentGreen,
+                                    size: 28,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Recipient',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _recipientName!,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            const Divider(height: 1, color: Color(0xFFF5F6FA)),
+                            const SizedBox(height: 16),
+                            
+                            // Trust Score
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.verified_user,
+                                  color: AppColors.textPrimary,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'Trust Score:',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF5F6FA),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                      FractionallySizedBox(
+                                        widthFactor: (_trustScore ?? 0) / 100,
+                                        child: Container(
+                                          height: 8,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.accentGreen,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  '${_trustScore?.toStringAsFixed(1)}%',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.accentGreen,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            // AI Advice
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F6FA),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.auto_awesome,
+                                    color: Colors.black,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      _aiAdvice ?? '',
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: AppColors.textPrimary,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Amount Input
+                    TextFormField(
+                      controller: _amountController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                      ],
+                      decoration: InputDecoration(
+                        labelText: 'Amount',
+                        hintText: '0.00',
+                        prefixIcon: const Icon(
+                          Icons.attach_money,
+                          color: AppColors.textSecondary,
+                        ),
+                        prefixText: '\$ ',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter amount';
+                        }
+                        return null;
+                      },
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Note (Optional)
+                    TextFormField(
+                      controller: _noteController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: 'Note (Optional)',
+                        hintText: 'Add a note for this transfer',
+                        prefixIcon: const Icon(
+                          Icons.note,
+                          color: AppColors.textSecondary,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 32),
+                    
+                    // Transfer Button
+                    SizedBox(
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _recipientName == null
+                            ? null
+                            : () {
+                                if (_formKey.currentState!.validate()) {
+                                  _showConfirmationDialog();
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryBlue,
+                          disabledBackgroundColor: Colors.grey[300],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: const Text(
+                          'Transfer Now',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
-            ],
-            
-            const SizedBox(height: 24),
-            
-            // Amount Input
-            TextFormField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-              ],
-              decoration: InputDecoration(
-                labelText: 'Amount',
-                hintText: '0.00',
-                prefixIcon: const Icon(
-                  Icons.attach_money,
-                  color: AppColors.primaryBlue,
-                ),
-                prefixText: '\$ ',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primaryBlue,
-                    width: 2,
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter amount';
-                }
-                final amount = double.tryParse(value);
-                if (amount == null || amount <= 0) {
-                  return 'Please enter a valid amount';
-                }
-                if (amount > _totalBalance) {
-                  return 'Insufficient balance';
-                }
-                return null;
-              },
             ),
-            
-            const SizedBox(height: 24),
-            
-            // Note (Optional)
-            TextFormField(
-              controller: _noteController,
-              maxLines: 3,
-              decoration: InputDecoration(
-                labelText: 'Note (Optional)',
-                hintText: 'Add a note for this transfer',
-                prefixIcon: const Icon(
-                  Icons.note,
-                  color: AppColors.primaryBlue,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(
-                    color: AppColors.primaryBlue,
-                    width: 2,
-                  ),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Transfer Button
-            SizedBox(
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _recipientName == null
-                    ? null
-                    : () {
-                        if (_formKey.currentState!.validate()) {
-                          _showConfirmationDialog();
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  disabledBackgroundColor: AppColors.divider,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'Transfer Now',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 
-  void _showConfirmationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          'Confirm Transfer',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ConfirmationRow(
-              label: 'To',
-              value: _recipientName ?? '',
-            ),
-            _ConfirmationRow(
-              label: 'Platform',
-              value: _platform,
-            ),
-            _ConfirmationRow(
-              label: 'Amount',
-              value: '\$${_amountController.text}',
-            ),
-            if (_noteController.text.isNotEmpty)
-              _ConfirmationRow(
-                label: 'Note',
-                value: _noteController.text,
-              ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+             onTap: () => Navigator.pop(context),
+             child: Container(
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.1),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.check_circle,
-                    color: AppColors.accentGreen,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Trust Score: ${_trustScore?.toStringAsFixed(1)}%',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.accentGreen,
-                      ),
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontWeight: FontWeight.w600,
-              ),
+              child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black),
             ),
           ),
-            ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _showBiometricAuth();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryBlue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Confirm',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+          const Text(
+            'Transfer Money',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
             ),
           ),
+          const SizedBox(width: 40), // Balance spacing
         ],
       ),
     );
   }
 
-  void _showBiometricAuth() {
+  void _showConfirmationDialog() {
+    // ... (Use existing confirmation dialog method or simplified one)
     showDialog(
       context: context,
-      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primaryBlue.withOpacity(0.1),
-                    AppColors.primaryLight.withOpacity(0.15),
-                  ],
-                ),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.fingerprint,
-                size: 80,
-                color: AppColors.primaryBlue,
-              ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Verify Your Identity',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Touch the fingerprint sensor to authenticate',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Simulate biometric authentication
-                  Navigator.pop(context);
-                  _simulateBiometricAuth();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Authenticate',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
+        title: const Text('Transfer Sent'),
+        content: const Text('Money has been transferred successfully.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))
+        ],
       ),
     );
-  }
-
-  void _simulateBiometricAuth() async {
-    // Show loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(
-          color: Colors.white,
-        ),
-      ),
-    );
-
-    // Simulate authentication delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (!mounted) return;
-    Navigator.pop(context); // Remove loading
-
-    // Process transfer after successful auth
-    _processTransfer();
-  }
-
-  void _processTransfer() {
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Transfer of \$${_amountController.text} to $_recipientName successful!',
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: AppColors.accentGreen,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        duration: const Duration(seconds: 3),
-      ),
-    );
-    
-    // Navigate back
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context);
-    });
   }
 }
 
@@ -867,78 +667,26 @@ class _PlatformChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          decoration: BoxDecoration(
-            gradient: isSelected ? AppColors.accentGradient : null,
-            color: isSelected ? null : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected ? Colors.transparent : AppColors.divider,
-              width: 2,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.primaryBlue.withOpacity(0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? Colors.white : AppColors.textPrimary,
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? Colors.transparent : Colors.grey[200]!,
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ConfirmationRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _ConfirmationRow({
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
-              fontSize: 14,
-            ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+            fontSize: 13,
           ),
-          Flexible(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

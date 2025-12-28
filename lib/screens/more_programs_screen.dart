@@ -34,62 +34,64 @@ class _MoreProgramsScreenState extends State<MoreProgramsScreen> with SingleTick
         physics: const BouncingScrollPhysics(),
         slivers: [
           // App Bar
+          // App Bar
           SliverAppBar(
-            expandedHeight: 220,
+            expandedHeight: 140, // Reduced height since no big gradient area needed
             floating: false,
             pinned: true,
-            backgroundColor: AppColors.primaryBlue,
-            foregroundColor: Colors.white,
+            backgroundColor: Colors.white,
+            foregroundColor: AppColors.textPrimary,
             elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              onPressed: () => Navigator.pop(context),
+            leading: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.black),
+              ),
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      AppColors.primaryBlue,
-                      AppColors.primaryBlue.withOpacity(0.9),
-                      AppColors.accentPurple.withOpacity(0.8),
-                    ],
-                  ),
-                ),
+                color: const Color(0xFFF5F6FA), // Match scaffold background
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 70, 24, 24),
+                    padding: const EdgeInsets.fromLTRB(24, 60, 24, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Row(
                           children: [
-                            Hero(
-                              tag: 'more_icon',
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.25),
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 10),
-                                    ),
-                                  ],
-                                ),
-                                child: const Icon(
-                                  Icons.apps_rounded,
-                                  color: Colors.white,
-                                  size: 36,
-                                ),
+                            Container( // Smaller icon container
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.apps_rounded,
+                                color: AppColors.primaryBlue,
+                                size: 28,
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 16),
                             const Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,20 +99,19 @@ class _MoreProgramsScreenState extends State<MoreProgramsScreen> with SingleTick
                                   Text(
                                     'More Services',
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 32,
+                                      color: AppColors.textPrimary,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
-                                  SizedBox(height: 6),
+                                  SizedBox(height: 4),
                                   Text(
-                                    'Everything you need in one place',
+                                    'Everything you need',
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                      color: AppColors.textSecondary,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      letterSpacing: 0.2,
                                     ),
                                   ),
                                 ],
