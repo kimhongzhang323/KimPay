@@ -33,7 +33,11 @@
 
 ### 💰 Core Wallet Management
 - **Multi-Wallet System**: Create and manage multiple wallets (Primary, Savings, Investment)
-- **Multi-Currency Support**: Support for USD, MYR, CNY, EUR, SGD with real-time conversion
+- **Dynamic Multi-Currency**: 
+  - Default currency set to **MYR (RM)**
+  - Real-time switching between USD ($), MYR (RM), EUR (€), SGD (S$), GBP (£), IDR (Rp)
+  - Dynamic currency symbol updates across all screens
+  - High-quality asset-based country flags
 - **Wallet Operations**:
   - Quick top-up with customizable amounts
   - Auto-reload functionality with threshold settings
@@ -44,8 +48,8 @@
 ### 🤖 AI-Powered Insights
 - **3-Tab Intelligence Dashboard**:
   - **Overview**: Real-time income vs expense tracking, 6-month balance trends, budget monitoring
-  - **Predictions**: 6-month financial projections, savings forecasts (3/6/12 months), AI-generated spending recommendations
-  - **Details**: Comprehensive income/expense breakdowns, monthly comparisons, category analysis, spending pattern insights
+  - **Predictions**: 6-month financial projections, savings forecasts (3/6/12 months)
+  - **Actionable Insights**: Smart cards with concrete savings opportunities and detailed reports
 
 - **Smart Analytics**:
   - Balance growth tracking with percentage indicators
