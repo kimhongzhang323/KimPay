@@ -30,6 +30,10 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
               const SizedBox(height: 32),
               _buildBudgetSection(),
               const SizedBox(height: 32),
+              _buildBudgetSection(),
+              const SizedBox(height: 32),
+              _buildAIInsightCard(),
+              const SizedBox(height: 32),
               _buildCategoriesGrid(),
               const SizedBox(height: 80),
             ],
@@ -332,6 +336,75 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildAIInsightCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)], // Indigo to Purple
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6366F1).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'AI Financial Insight',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Based on your spending patterns, you could save \$150 this month by reducing dining out expenses.',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: const Color(0xFF6366F1),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Get Detailed Report', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

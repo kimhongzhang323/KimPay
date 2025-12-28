@@ -3,7 +3,12 @@ import 'package:fl_chart/fl_chart.dart';
 import '../design_system/app_colors.dart';
 
 class TransactionsScreen extends StatefulWidget {
-  const TransactionsScreen({super.key});
+  final String selectedCurrency;
+  
+  const TransactionsScreen({
+    super.key, 
+    this.selectedCurrency = 'USD',
+  });
 
   @override
   State<TransactionsScreen> createState() => _TransactionsScreenState();
@@ -13,6 +18,29 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   int _selectedSegment = 1; // 0: Income, 1: Expense
   bool _saveAccount = true;
   int _touchedIndex = 4; // Default to Friday
+  
+  // Basic mock rates map (duplicated for simplicity or we could move to a shared data file)
+  final Map<String, double> _exchangeRates = {
+    'USD': 1.0,
+    'MYR': 4.65,
+    'SGD': 1.35,
+    'EUR': 0.92,
+    'GBP': 0.79,
+    'IDR': 15500.0,
+  };
+  
+  double get _conversionRate => _exchangeRates[widget.selectedCurrency] ?? 1.0;
+  
+  String get _currencySymbol {
+    switch(widget.selectedCurrency) {
+      case 'MYR': return 'RM';
+      case 'SGD': return 'S\$';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'IDR': return 'Rp';
+      default: return '\$';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +65,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                '\$8,182.80',
-                style: TextStyle(
+              Text(
+                '$_currencySymbol${(8182.80 * _conversionRate).toStringAsFixed(2)}',
+                style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -163,8 +191,8 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
+                children: [ // Removed const
+                  const Text(
                     'Total Expenses',
                     style: TextStyle(
                       color: AppColors.textSecondary,
@@ -172,10 +200,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    '\$6282.20',
-                    style: TextStyle(
+                    '$_currencySymbol${(6282.20 * _conversionRate).toStringAsFixed(2)}',
+                    style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -416,9 +444,9 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                '\$180.00',
-                style: TextStyle(
+              Text(
+                '$_currencySymbol${(180.00 * _conversionRate).toStringAsFixed(2)}',
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,

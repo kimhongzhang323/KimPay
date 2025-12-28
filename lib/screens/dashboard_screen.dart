@@ -14,30 +14,25 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
-  
-  // Pages for the new 5-tab layout
-  late final List<Widget> _pages;
+  String _selectedCurrency = 'USD';
 
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
+  void _updateCurrency(String newCurrency) {
+    setState(() {
+      _selectedCurrency = newCurrency;
+    });
+  }
+
+  List<Widget> get _pages {
+    return [
       HomeContent(
-        selectedCurrency: 'USD',
-        onCurrencyTap: () {},
+        selectedCurrency: _selectedCurrency,
+        onCurrencyTap: () {}, 
+        onCurrencyChanged: _updateCurrency,
       ),
-      const ExchangeScreen(), // New Exchange Screen as 2nd tab
-      const TransactionsScreen(), // Moving Transactions to 3rd? Or keeping layout logical?
-      // Based on image: Home | Exchange (Swap) | Analytics (Chart) | Profile | (Clock)
-      // I will map:
-      // 0: HomeContent
-      // 1: ExchangeScreen
-      // 2: AIInsightsScreen (Analytics)
-      // 3: ProfileScreen
-      // 4: TransactionsScreen (History)
-      const AIInsightsScreen(), 
-      const ProfileScreen(),
-      const TransactionsScreen(), // Putting history last
+      ExchangeScreen(selectedCurrency: _selectedCurrency),
+      ProfileScreen(), // Index 2
+      AIInsightsScreen(), // Index 3
+      TransactionsScreen(selectedCurrency: _selectedCurrency),
     ];
   }
 
@@ -47,9 +42,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: const Color(0xFFF5F6FA), // Always light
       body: Stack(
         children: [
-          IndexedStack(
-            index: _selectedIndex,
-            children: _pages,
+          Positioned.fill(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _pages,
+            ),
           ),
           Positioned(
             left: 24,
@@ -63,8 +60,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildFloatingNavBar() {
-    // If we are on Exchange screen (index 1), we might want the nav bar different or just consistent dark?
-    // The design shows the nav bar on Exchange screen is dark too.
     return Container(
       height: 72,
       decoration: BoxDecoration(
@@ -82,10 +77,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _buildNavItem(0, Icons.home_rounded),
-          _buildNavItem(1, Icons.swap_horiz), // Exchange Icon
-          _buildNavItem(2, Icons.pie_chart_outline), // Analytics
-          _buildNavItem(3, Icons.person_outline), // Profile
-          _buildNavItem(4, Icons.history), // History/Transactions
+          _buildNavItem(1, Icons.swap_horiz), // Exchange
+          _buildNavItem(2, Icons.person_outline), // Profile
+          _buildNavItem(3, Icons.pie_chart_outline), // Analytics
+          _buildNavItem(4, Icons.history), // Transactions
         ],
       ),
     );

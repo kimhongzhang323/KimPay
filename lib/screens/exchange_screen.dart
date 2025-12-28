@@ -3,7 +3,12 @@ import 'package:fl_chart/fl_chart.dart';
 import '../design_system/app_colors.dart';
 
 class ExchangeScreen extends StatefulWidget {
-  const ExchangeScreen({super.key});
+  final String selectedCurrency;
+  
+  const ExchangeScreen({
+    super.key, 
+    this.selectedCurrency = 'USD', // Default to USD
+  });
 
   @override
   State<ExchangeScreen> createState() => _ExchangeScreenState();
@@ -16,8 +21,24 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
   double _sendAmount = 1000.0;
   
   // Exchange State
-  String _fromCurrency = 'USD';
+  late String _fromCurrency;
   String _toCurrency = 'ETH';
+
+  @override
+  void initState() {
+    super.initState();
+    _fromCurrency = widget.selectedCurrency;
+  }
+  
+  @override
+  void didUpdateWidget(ExchangeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedCurrency != oldWidget.selectedCurrency) {
+      setState(() {
+        _fromCurrency = widget.selectedCurrency;
+      });
+    }
+  }
 
   final Map<String, double> _cryptoRatesInUSD = {
     'ETH': 3500.0,
@@ -37,13 +58,14 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
   };
 
   // Icon mapping
+  // Icon mapping
   final Map<String, String> _fiatFlags = {
-    'USD': '🇺🇸',
-    'MYR': '🇲🇾',
-    'SGD': '🇸🇬',
-    'EUR': '🇪🇺',
-    'GBP': '🇬🇧',
-    'IDR': '🇮🇩',
+    'USD': 'assets/images/countryFlag/us.png',
+    'MYR': 'assets/images/countryFlag/my.png',
+    'SGD': 'assets/images/countryFlag/sg.png',
+    'EUR': 'assets/images/countryFlag/de.png', // Fallback to DE for Euro
+    'GBP': 'assets/images/countryFlag/gb.png',
+    'IDR': 'assets/images/countryFlag/id.png',
   };
 
   // Helper to get rates
@@ -71,7 +93,17 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
           controller: controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            prefixText: _fiatFlags[_fromCurrency]! + ' ',
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ClipOval(
+                child: Image.asset(
+                  _fiatFlags[_fromCurrency]!,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             border: const OutlineInputBorder(),
           ),
         ),
@@ -129,7 +161,15 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
                       setState(() => _fromCurrency = currency);
                       Navigator.pop(context);
                     },
-                    leading: Text(_fiatFlags[currency]!, style: const TextStyle(fontSize: 24)),
+                    leading: ClipOval(
+                      child: Image.asset(
+                        _fiatFlags[currency]!,
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.flag),
+                      ),
+                    ),
                     title: Text(currency, style: const TextStyle(fontWeight: FontWeight.w700)),
                     trailing: _fromCurrency == currency
                         ? const Icon(Icons.check_circle, color: AppColors.primaryBlue)

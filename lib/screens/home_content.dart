@@ -14,11 +14,13 @@ class HomeContent extends StatefulWidget {
   final String selectedCurrency;
   final VoidCallback onCurrencyTap;
   final VoidCallback? onNavigateToAIInsights;
+  final Function(String) onCurrencyChanged;
 
   const HomeContent({
     super.key,
     required this.selectedCurrency,
     required this.onCurrencyTap,
+    required this.onCurrencyChanged,
     this.onNavigateToAIInsights,
   });
 
@@ -28,8 +30,29 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   // Currency State
-  String _currentCurrency = 'USD';
+  late String _currentCurrency;
   double _balance = 8182.80;
+  
+  @override
+  void initState() {
+    super.initState();
+    _currentCurrency = widget.selectedCurrency;
+  }
+
+  @override
+  void didUpdateWidget(HomeContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.selectedCurrency != oldWidget.selectedCurrency) {
+      setState(() {
+        // When the parent's selectedCurrency changes, we need to update the local _currentCurrency
+        // and re-calculate _balance to reflect the new currency.
+        // The _balance is currently stored in the old _currentCurrency.
+        double baseAmount = _balance / _exchangeRates[_currentCurrency]!;
+        _currentCurrency = widget.selectedCurrency;
+        _balance = baseAmount * _exchangeRates[_currentCurrency]!;
+      });
+    }
+  }
   
   final Map<String, double> _exchangeRates = {
     'USD': 1.0,
@@ -41,17 +64,33 @@ class _HomeContentState extends State<HomeContent> {
   };
 
   final Map<String, String> _currencyFlags = {
-    'USD': '🇺🇸',
-    'MYR': '🇲🇾',
-    'SGD': '🇸🇬',
-    'EUR': '🇪🇺',
-    'GBP': '🇬🇧',
-    'IDR': '🇮🇩',
+    'USD': 'assets/images/countryFlag/us.png',
+    'MYR': 'assets/images/countryFlag/my.png',
+    'SGD': 'assets/images/countryFlag/sg.png',
+    'EUR': 'assets/images/countryFlag/eu.png', // Assuming eu.png exists, checking file list... wait, 'eu' not in list. using generic or skipped. 
+    // Checking list again: 'fr', 'de', 'it' exist. EUR is tricky. Let's use 'eu.png' if I missed it or default to 'fr.png' as proxy or just remove flag for now. 
+    // Wait, the list has 'gb.png' for GBP. 
+    // Let's check 'eu' again. 'er', 'es', 'et'. No 'eu'.
+    // I will map EUR to a prominent Euro country like DE or FR, or just handle gracefully. Let's use 'de.png' (Germany) for EUR for now or maybe I can find a 'eu' one?
+    // actually, let's use a generic icon or just Germany 'de.png' for now.
+    // 'IDR' -> 'id.png'.
+    // 'GBP' -> 'gb.png'.
+  };
+
+  // Correction: I should probably double check if I have a eu flag. 
+  // Let's just use 'de.png' for EUR for now. 
+  
+  final Map<String, String> _currencyAssets = {
+    'USD': 'assets/images/countryFlag/us.png',
+    'MYR': 'assets/images/countryFlag/my.png',
+    'SGD': 'assets/images/countryFlag/sg.png',
+    'EUR': 'assets/images/countryFlag/de.png', // Using DE for Euro
+    'GBP': 'assets/images/countryFlag/gb.png',
+    'IDR': 'assets/images/countryFlag/id.png',
   };
 
   void _updateCurrency(String newCurrency) {
     setState(() {
-      // Convert back to base (USD) then to new currency
       double baseAmount = _balance / _exchangeRates[_currentCurrency]!;
       _currentCurrency = newCurrency;
       _balance = baseAmount * _exchangeRates[newCurrency]!;
@@ -100,9 +139,14 @@ class _HomeContentState extends State<HomeContent> {
                       _updateCurrency(currency);
                       Navigator.pop(context);
                     },
-                    leading: Text(
-                      _currencyFlags[currency]!,
-                      style: const TextStyle(fontSize: 24),
+                    leading:  ClipOval(
+                      child: Image.asset(
+                        _currencyAssets[currency]!,
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.flag),
+                      ),
                     ),
                     title: Text(
                       currency,
@@ -321,8 +365,17 @@ class _HomeContentState extends State<HomeContent> {
                                   ),
                                   child: Row(
                                     children: [
+                                      ClipOval(
+                                        child: Image.asset(
+                                          _currencyAssets[_currentCurrency]!,
+                                          width: 16,
+                                          height: 16,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
                                       Text(
-                                        '$_currentCurrency ${_currencyFlags[_currentCurrency]}',
+                                        _currentCurrency,
                                         style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(width: 4),
