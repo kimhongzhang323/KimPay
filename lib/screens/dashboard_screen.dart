@@ -14,7 +14,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
-  String _selectedCurrency = 'USD';
+  String _selectedCurrency = 'MYR';
 
   void _updateCurrency(String newCurrency) {
     setState(() {
@@ -30,8 +30,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onCurrencyChanged: _updateCurrency,
       ),
       ExchangeScreen(selectedCurrency: _selectedCurrency),
-      ProfileScreen(), // Index 2
-      AIInsightsScreen(), // Index 3
+      ProfileScreen(selectedCurrency: _selectedCurrency), // Index 2
+      AIInsightsScreen(selectedCurrency: _selectedCurrency), // Index 3
       TransactionsScreen(selectedCurrency: _selectedCurrency),
     ];
   }

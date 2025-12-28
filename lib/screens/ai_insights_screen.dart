@@ -3,7 +3,12 @@ import 'package:fl_chart/fl_chart.dart';
 import '../design_system/app_colors.dart';
 
 class AIInsightsScreen extends StatefulWidget {
-  const AIInsightsScreen({super.key});
+  final String selectedCurrency;
+
+  const AIInsightsScreen({
+    super.key, 
+    this.selectedCurrency = 'USD', // Default to USD
+  });
 
   @override
   State<AIInsightsScreen> createState() => _AIInsightsScreenState();
@@ -11,6 +16,30 @@ class AIInsightsScreen extends StatefulWidget {
 
 class _AIInsightsScreenState extends State<AIInsightsScreen> {
   // 0: Analytics, 1: Budget, 2: Goals (Not really used in new design but keeping state structure)
+  
+  // Helper for rates
+  double get _conversionRate {
+    final Map<String, double> rates = {
+      'USD': 1.0,
+      'MYR': 4.65,
+      'SGD': 1.35,
+      'EUR': 0.92,
+      'GBP': 0.79,
+      'IDR': 15500.0,
+    };
+    return rates[widget.selectedCurrency] ?? 1.0;
+  }
+
+  String get _currencySymbol {
+    switch(widget.selectedCurrency) {
+      case 'MYR': return 'RM';
+      case 'SGD': return 'S\$';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'IDR': return 'Rp';
+      default: return '\$';
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -132,9 +161,9 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                 ],
               ),
               const Spacer(),
-              const Text(
-                '\$8,182.80',
-                style: TextStyle(
+              Text(
+                '$_currencySymbol${(8182.80 * _conversionRate).toStringAsFixed(2)}',
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
                 ),
@@ -223,7 +252,7 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                     Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
+                        children: [
                           Text(
                             'Total Balance',
                             style: TextStyle(
@@ -232,8 +261,8 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
                             ),
                           ),
                           Text(
-                            '\$8,182',
-                            style: TextStyle(
+                            '$_currencySymbol${(8182 * _conversionRate).toStringAsFixed(0)}',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -249,13 +278,13 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    _buildLegendItem('Earned', '\$40,911', const Color(0xFF4ADE80)),
+                    _buildLegendItem('Earned', '$_currencySymbol${(40911 * _conversionRate).toStringAsFixed(0)}', const Color(0xFF4ADE80)),
                     const SizedBox(height: 12),
-                    _buildLegendItem('Spent', '\$12,273', const Color(0xFFA78BFA)),
+                    _buildLegendItem('Spent', '$_currencySymbol${(12273 * _conversionRate).toStringAsFixed(0)}', const Color(0xFFA78BFA)),
                     const SizedBox(height: 12),
-                    _buildLegendItem('Available', '\$8,182', const Color(0xFFFBBF24)),
+                    _buildLegendItem('Available', '$_currencySymbol${(8182 * _conversionRate).toStringAsFixed(0)}', const Color(0xFFFBBF24)),
                     const SizedBox(height: 12),
-                    _buildLegendItem('Savings', '\$4,091', const Color(0xFF60A5FA)),
+                    _buildLegendItem('Savings', '$_currencySymbol${(4091 * _conversionRate).toStringAsFixed(0)}', const Color(0xFF60A5FA)),
                   ],
                 ),
               ),
@@ -328,9 +357,9 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
           borderRadius: BorderRadius.circular(4),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'Amount: \$20,256',
-          style: TextStyle(
+        Text(
+          'Amount: $_currencySymbol${(20256 * _conversionRate).toStringAsFixed(0)}',
+          style: const TextStyle(
             color: AppColors.textSecondary,
             fontSize: 12,
           ),
@@ -410,10 +439,10 @@ class _AIInsightsScreenState extends State<AIInsightsScreen> {
 
   Widget _buildCategoriesGrid() {
     final categories = [
-      {'name': 'Bills', 'amount': '\$620.00', 'items': '12 items', 'icon': Icons.receipt_long},
-      {'name': 'Food', 'amount': '\$320.00', 'items': '15 items', 'icon': Icons.restaurant},
-      {'name': 'Utilities', 'amount': '\$120.00', 'items': '20 items', 'icon': Icons.tv},
-      {'name': 'Health', 'amount': '\$450.00', 'items': '08 items', 'icon': Icons.favorite},
+      {'name': 'Bills', 'amount': '$_currencySymbol${(620.00 * _conversionRate).toStringAsFixed(2)}', 'items': '12 items', 'icon': Icons.receipt_long},
+      {'name': 'Food', 'amount': '$_currencySymbol${(320.00 * _conversionRate).toStringAsFixed(2)}', 'items': '15 items', 'icon': Icons.restaurant},
+      {'name': 'Utilities', 'amount': '$_currencySymbol${(120.00 * _conversionRate).toStringAsFixed(2)}', 'items': '20 items', 'icon': Icons.tv},
+      {'name': 'Health', 'amount': '$_currencySymbol${(450.00 * _conversionRate).toStringAsFixed(2)}', 'items': '08 items', 'icon': Icons.favorite},
     ];
 
     return GridView.count(

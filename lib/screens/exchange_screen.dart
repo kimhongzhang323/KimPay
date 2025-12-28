@@ -68,6 +68,17 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
     'IDR': 'assets/images/countryFlag/id.png',
   };
 
+  String get _fiatSymbol {
+    switch(_fromCurrency) {
+      case 'MYR': return 'RM';
+      case 'SGD': return 'S\$';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'IDR': return 'Rp';
+      default: return '\$';
+    }
+  }
+
   // Helper to get rates
   double get _currentRate {
     // 1. Get Value of 1 Unit of FromCurrency in USD
@@ -377,7 +388,7 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '\$${_sendAmount.toStringAsFixed(0)}',
+                          '$_fiatSymbol${_sendAmount.toStringAsFixed(0)}',
                           style: const TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 24,
@@ -405,7 +416,7 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
                     ),
                      const SizedBox(height: 8),
                      // Dynamic available balance mock
-                     const Text('Available: \$8,182.80', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                     Text('Available: $_fiatSymbol${(8182.80 * (1.0/_fiatRatesFromUSD[_fromCurrency]!)).toStringAsFixed(2)}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                   ],
                 ),
               ),
@@ -467,7 +478,7 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
                   ),
                    const SizedBox(height: 8),
                    Text(
-                     '1 $_toCurrency ≈ \$${_cryptoRatesInUSD[_toCurrency]}', 
+                     '1 $_toCurrency ≈ \$${_cryptoRatesInUSD[_toCurrency]}', // Keeping USD for crypto base rate as per convention usually
                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)
                    ),
                 ],
@@ -590,7 +601,7 @@ class _ExchangeScreenState extends State<ExchangeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '\$${_cryptoRatesInUSD[_toCurrency]}',
+                    '$_fiatSymbol${(_cryptoRatesInUSD[_toCurrency]! * _fiatRatesFromUSD[_fromCurrency]!).toStringAsFixed(2)}',
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,

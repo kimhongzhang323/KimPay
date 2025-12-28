@@ -62,6 +62,17 @@ class _HomeContentState extends State<HomeContent> {
     'GBP': 0.79,
     'IDR': 15500.0,
   };
+  
+  String get _currencySymbol {
+    switch(_currentCurrency) {
+      case 'MYR': return 'RM';
+      case 'SGD': return 'S\$';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'IDR': return 'Rp';
+      default: return '\$';
+    }
+  }
 
   final Map<String, String> _currencyFlags = {
     'USD': 'assets/images/countryFlag/us.png',
@@ -388,9 +399,9 @@ class _HomeContentState extends State<HomeContent> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            _currentCurrency == 'IDR' 
-                                ? 'Rp ${_balance.toStringAsFixed(0)}'
-                                : '\$${_balance.toStringAsFixed(2)}',
+                            _currentCurrency == 'IDR' // Special case for IDR usually no decimal
+                                ? '$_currencySymbol ${_balance.toStringAsFixed(0)}'
+                                : '$_currencySymbol${_balance.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 32,
@@ -548,30 +559,30 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildManageExpenses() {
-    final List<Map<String, String>> transactions = [
+    final List<Map<String, dynamic>> transactions = [
       {
         'logo': 'assets/images/grab.png',
         'title': 'Grab Transport',
         'subtitle': '10:00 am • 08 March, 2025',
-        'amount': '-\$24.00',
+        'amount': 24.00,
       },
       {
         'logo': 'assets/images/agoda.png',
         'title': 'Agoda Hotel',
         'subtitle': '12:00 pm • 08 March, 2025',
-        'amount': '-\$120.00',
+        'amount': 120.00,
       },
       {
         'logo': 'assets/images/touchngo.png',
         'title': 'Touch \'n Go',
         'subtitle': '04:30 pm • 07 March, 2025',
-        'amount': '-\$50.00',
+        'amount': 50.00,
       },
       {
         'logo': 'assets/images/boost.png',
         'title': 'Boost Topup',
         'subtitle': '09:15 am • 06 March, 2025',
-        'amount': '-\$30.00',
+        'amount': 30.00,
       },
     ];
 
@@ -600,12 +611,19 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ],
         ),
-        ...transactions.map((tx) => _buildExpenseItem(
-          logoPath: tx['logo']!,
-          title: tx['title']!,
-          subtitle: tx['subtitle']!,
-          amount: tx['amount']!,
-        )),
+        ...transactions.map((tx) {
+           double originalAmount = (tx['amount'] as double);
+           double convertedAmount = originalAmount * (_exchangeRates[_currentCurrency] ?? 1.0);
+           String sign = '-';
+           String formatted = '$sign$_currencySymbol${convertedAmount.toStringAsFixed(2)}';
+           
+           return _buildExpenseItem(
+            logoPath: tx['logo'] as String,
+            title: tx['title'] as String,
+            subtitle: tx['subtitle'] as String,
+            amount: formatted,
+          );
+        }),
       ],
     );
   }

@@ -3,7 +3,36 @@ import '../design_system/app_colors.dart';
 import 'settings_detail_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final String selectedCurrency;
+
+  const ProfileScreen({
+    super.key, 
+    this.selectedCurrency = 'USD', // Default to USD if not provided, though Dashboard passes 'MYR'
+  });
+
+  // Helper for rates (ideally this should be in a centralized service/provider)
+  double get _conversionRate {
+    final Map<String, double> rates = {
+      'USD': 1.0,
+      'MYR': 4.65,
+      'SGD': 1.35,
+      'EUR': 0.92,
+      'GBP': 0.79,
+      'IDR': 15500.0,
+    };
+    return rates[selectedCurrency] ?? 1.0;
+  }
+
+  String get _currencySymbol {
+    switch(selectedCurrency) {
+      case 'MYR': return 'RM';
+      case 'SGD': return 'S\$';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'IDR': return 'Rp';
+      default: return '\$';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,9 +150,9 @@ class ProfileScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildStatItem('Income', '\$8,500'),
+        _buildStatItem('Income', '$_currencySymbol${(8500 * _conversionRate).toStringAsFixed(0)}'),
         _buildStatItem('Transactions', '45'),
-        _buildStatItem('Expense', '\$2,100'),
+        _buildStatItem('Expense', '$_currencySymbol${(2100 * _conversionRate).toStringAsFixed(0)}'),
       ],
     );
   }
