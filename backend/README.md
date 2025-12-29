@@ -7,15 +7,14 @@ Enterprise-grade Go (Golang) backend for KimPay financial services.
 This backend serves as a microservices-ready monolith (Modular Monolith) implementing:
 -   **Clean Architecture:** (Handlers -> Services -> Repositories)
 -   **Database:** **PostgreSQL** for ACID-compliant financial records.
+-   **Blockchain Ledger:** Internal **SHA-256 Blockchain** mechanism to provide a tamper-proof audit trail of all transactions.
 -   **Caching & Messaging:** **Redis** used for caching market data and implementing the Distributed Job Queue.
--   **API Protocols:**
-    -   **REST:** Standard JSON APIs for mobile clients.
-    -   **GraphQL:** Flexible data fetching at `/graphql`.
-    -   **gRPC:** Proto definitions available in `rpc/` for internal service calls.
+-   **API Protocols:** REST, GraphQL, gRPC.
 
 ## Services
 -   **Auth Service:** JWT generation, bcrypt hashing.
 -   **Wallet Service:** Multi-currency logic, PostgreSQL transactions.
+-   **Blockchain Service:** Mining (PoW) and Block Validation logic.
 -   **Queue Service:** Redis List-based consumer (Worker Pool) for high-frequency transactions.
 -   **Market Service:** Connects to CoinGecko & Frankfurter APIs.
 
@@ -33,6 +32,16 @@ This backend serves as a microservices-ready monolith (Modular Monolith) impleme
 
 ## Endpoints
 
+### Blockchain (`/api/blockchain` - Protected)
+View the immutable ledger:
+```json
+{
+  "ledger_height": 5,
+  "is_valid": true,
+  "blocks": [...]
+}
+```
+
 ### GraphQL (`/graphql`)
 Query your user data flexibly:
 ```graphql
@@ -48,5 +57,5 @@ query {
 ```
 
 ### REST API
--   `POST /api/transactions/transfer`: Pushes job to Redis Queue (Async).
+-   `POST /api/transactions/transfer`: Pushes job to Redis Queue (Async) -> Triggers Block Mining on success.
 -   `GET /api/market/crypto`: Live cached data.

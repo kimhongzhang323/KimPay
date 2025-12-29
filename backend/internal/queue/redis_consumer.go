@@ -12,12 +12,14 @@ import (
 const QueueKey = "tx_queue"
 
 type RedisConsumer struct {
-	txService *services.TransactionService
+	txService    *services.TransactionService
+	chainService *services.BlockchainService
 }
 
 func NewRedisConsumer() *RedisConsumer {
 	return &RedisConsumer{
-		txService: services.NewTransactionService(),
+		txService:    services.NewTransactionService(),
+		chainService: services.NewBlockchainService(),
 	}
 }
 
@@ -42,11 +44,20 @@ func (c *RedisConsumer) StartConsumer(workerID int) {
 
 		log.Printf("Consumer %d Processing: %s (Amount: %.2f)", workerID, jobData.Description, jobData.Amount)
 		
-		_, err = c.txService.Transfer(jobData.FromUserID, jobData.FromWalletID, jobData.ToWalletID, jobData.Amount, jobData.Description)
+		tx, err := c.txService.Transfer(jobData.FromUserID, jobData.FromWalletID, jobData.ToWalletID, jobData.Amount, jobData.Description)
 		if err != nil {
 			log.Printf("Transaction Failed: %v", err)
 		} else {
 			log.Printf("Transaction Success: %s", jobData.Reference)
+			
+			// BLOCKCHAIN INTEGRATION: Mine the block
+			// We can fire this asynchronously so consumer speed isn't bogged down by mining difficulty
+			go func() {
+				_, err := c.chainService.AddBlock(*tx)
+				if err != nil {
+					log.Printf("Mining Failed: %v", err)
+				}
+			}()
 		}
 	}
 }

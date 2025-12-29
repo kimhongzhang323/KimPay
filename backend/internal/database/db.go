@@ -39,6 +39,7 @@ func Connect() {
 		&models.Watchlist{},   // Added
 		&models.AuditLog{},    // Added
 		&models.Notification{},// Added
+		&models.Block{},       // Blockchain Ledger
 	)
 	if err != nil {
 		log.Fatal("Migration failed:", err)

@@ -39,10 +39,14 @@ func main() {
 
 	// 5. Handlers
 	authHandler := handlers.NewAuthHandler()
-	walletHandler := handlers.NewWalletHandler() // Now uses Redis internally
+	walletHandler := handlers.NewWalletHandler() 
 	marketHandler := handlers.NewMarketHandler()
+	chainHandler := handlers.NewBlockchainHandler() // Added
+
 
 	// 6. Routes
+	r.Use(middleware.RequestContextMiddleware()) // GLOBAL TRACE ID INJECTION
+
 	r.GET("/graphql", gin.WrapH(h)) // GraphQL Endpoint
 	r.POST("/graphql", gin.WrapH(h))
 
@@ -56,11 +60,15 @@ func main() {
 
 		protected := api.Group("/")
 		protected.Use(middleware.AuthMiddleware())
+		protected.Use(middleware.PopulateUserContext()) // Inject UserID to go-context
 		{
 			protected.GET("/wallets", walletHandler.GetWallets)
 			protected.POST("/wallets/topup", walletHandler.TopUp)
 			protected.GET("/transactions", walletHandler.GetTransactions)
-			protected.POST("/transactions/transfer", walletHandler.Transfer) // Pushes to Redis
+			protected.POST("/transactions/transfer", walletHandler.Transfer) 
+
+			// Blockchain Ledger
+			protected.GET("/blockchain", chainHandler.GetChain)
 		}
 	}
 

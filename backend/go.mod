@@ -13,4 +13,5 @@ require (
 	github.com/graphql-go/graphql v0.8.1
 	google.golang.org/grpc v1.60.0
 	google.golang.org/protobuf v1.31.0
+	github.com/google/uuid v1.3.1
 )

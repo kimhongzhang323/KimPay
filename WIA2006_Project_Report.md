@@ -399,6 +399,9 @@ a.	Technical stack and development methodologies
         -   **REST:** For standard mobile client interactions.
         -   **GraphQL:** Implemented for flexible data queries (e.g., deeply nested User/Wallet/Transaction graphs).
         -   **gRPC:** Protocol Buffers definitions added for future microservices communication.
+    -   **Blockchain System:** Implemented a **Private Immutable Ledger** (internal blockchain) to secure transactions.
+        -   **Structure:** SHA-256 Hashing, Merkle-like chaining, and Proof-of-Work (PoW) consensus.
+        -   **Auditability:** Every successful transfer is 'mined' into a block, ensuring the financial history is tamper-proof.
     -   **External Integration:** Connected to **CoinGecko API** and **ExchangeRate-API** to fetch live Real-Time market data.
 -   **Frontend Framework:** **Flutter 3.6.2** (Dart 3.0) for cross-platform iOS and Android development. Flutter was chosen for its "Write Once, Run Anywhere" capability and high-performance Skia rendering engine.
 -   **State Management:** **Provider** architecture was used to manage app state cleanly, ensuring data consistency between the Wallet and Exchange screens.
@@ -451,7 +454,7 @@ a.	What was learned
 This project provided invaluable hands-on experience in full-stack mobile development. We learned the importance of **State Management** in complex financial apps—ensuring the "Balance" updates everywhere instantly is non-trivial. Additionally, integrating third-party libraries like `fl_chart` and `mobile_scanner` taught us how to leverage the open-source ecosystem effectively.
 
 b.	What remains to be learned (Future Research)
-While the current app is functional, the "Backend" is simulated. Future research needs to focus on **Security Engineering** for real Money Services Business (MSB) compliance. We also need to explore **Blockchain Smart Contracts** to move from a centralized ledger to a decentralized one (DeFi).
+While the current app is functional, the "Backend" requires further decentralized enhancements. Future research needs to focus on **Security Engineering** for real Money Services Business (MSB) compliance. We also need to move from our internal **Private Ledger** to a public **Blockchain Smart Contract** (e.g., Ethereum/Solidity) to enable true DeFi interoperability.
 
 c.	The shortcomings of what was done
 -   **Mock Data:** Stock prices are simulated and not live streaming from an exchange API (like AlphaVantage) due to API rate limits on free tiers during development. However, Crypto and Forex rates are live via CoinGecko.
