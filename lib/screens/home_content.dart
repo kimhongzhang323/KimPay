@@ -8,6 +8,7 @@ import 'topup_screen.dart';
 import 'scan_screen.dart';
 import 'mini_program_screen.dart';
 import 'more_programs_screen.dart';
+import 'transactions_screen.dart';
 import 'wallet_detail_screen.dart';
 
 class HomeContent extends StatefulWidget {
@@ -106,6 +107,117 @@ class _HomeContentState extends State<HomeContent> {
       _currentCurrency = newCurrency;
       _balance = baseAmount * _exchangeRates[newCurrency]!;
     });
+  }
+
+  OverlayEntry? _overlayEntry;
+  final LayerLink _layerLink = LayerLink();
+
+  void _showNotificationOverlay(BuildContext context) {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+      return;
+    }
+
+    OverlayState? overlayState = Overlay.of(context);
+    _overlayEntry = OverlayEntry(
+      builder: (context) => Stack(
+        children: [
+          // Dismissible background
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {
+                _overlayEntry?.remove();
+                _overlayEntry = null;
+              },
+              behavior: HitTestBehavior.translucent,
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          // Dropdown content
+          Positioned(
+            width: 320,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: const Offset(-280, 50), // Position to the left and down
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                child: Container(
+                  height: 350,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Text(
+                              'Notifications',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Mark all read',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.primaryBlue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(),
+                      Expanded(
+                        child: ListView(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          shrinkWrap: true,
+                          children: [
+                             _buildNotificationItem(
+                                'Payment Received',
+                                'You received RM50.00 from John Doe',
+                                '2 mins ago',
+                                Icons.arrow_downward,
+                                Colors.green,
+                              ),
+                              _buildNotificationItem(
+                                'Payment Successful',
+                                'Payment to Starbucks was successful',
+                                '1 hour ago',
+                                Icons.check,
+                                Colors.blue,
+                              ),
+                              _buildNotificationItem(
+                                'Top Up Successful',
+                                'Top up RM100.00',
+                                'Yesterday',
+                                Icons.account_balance_wallet,
+                                Colors.orange,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    overlayState.insert(_overlayEntry!);
   }
 
   void _showCurrencySelector() {
@@ -214,47 +326,51 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildHeader() {
-    // ... (rest of header same as before)
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.end, // Align everything to the right since we removed the left menu
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [],
-        ),
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.menu, size: 20),
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+        Row(
+          children: [
+            // Notification with Badge
+            GestureDetector(
+              onTap: () {
+                _showNotificationOverlay(context);
+              },
+              child: CompositedTransformTarget(
+                link: _layerLink,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.notifications_outlined, size: 20),
                     ),
-                    child: const Icon(Icons.notifications_outlined, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundImage: AssetImage('assets/images/profile.jpg'),
-                  ),
-                ],
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 12),
+            const CircleAvatar(
+              radius: 20,
+              backgroundImage: AssetImage('assets/images/profile.jpg'),
+            ),
+          ],
         ),
       ],
     );
@@ -601,11 +717,12 @@ class _HomeContentState extends State<HomeContent> {
             ),
             TextButton(
               onPressed: () {
-                // Navigate to transactions tab (index 4 in dashboard)
-                // This requires a callback or using a global state, but for now we can push the screen directly or ignore
-                // Pushing TransactionsScreen directly for "interaction" feel
-                // Navigator.push(context, MaterialPageRoute(builder: (_) => const TransactionsScreen())); 
-                // Better: just let the bottom nav handle it.
+                 Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (_) => TransactionsScreen(selectedCurrency: _currentCurrency)
+                  )
+                ); 
               },
               child: const Text('View All'),
             ),
@@ -695,6 +812,58 @@ class _HomeContentState extends State<HomeContent> {
               fontWeight: FontWeight.w700,
               fontSize: 14,
               color: amount.startsWith('-') ? Colors.red : AppColors.accentGreen,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  Widget _buildNotificationItem(String title, String subtitle, String time, IconData icon, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F6FA),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            time,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 10,
             ),
           ),
         ],

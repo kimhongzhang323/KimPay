@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/onboarding_screen.dart';
+import 'screens/dashboard_screen.dart';
 import 'design_system/app_colors.dart';
 
 void main() {
@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
           type: BottomNavigationBarType.fixed,
         ),
       ),
-      home: const OnboardingScreen(),
+      home: const DashboardScreen(),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_content.dart';
-import 'transactions_screen.dart';
+import 'scan_screen.dart'; // Changed from TransactionsScreen
 import 'exchange_screen.dart'; // New Import
 import 'ai_insights_screen.dart';
 import 'profile_screen.dart';
@@ -30,9 +30,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onCurrencyChanged: _updateCurrency,
       ),
       ExchangeScreen(selectedCurrency: _selectedCurrency),
-      ProfileScreen(selectedCurrency: _selectedCurrency), // Index 2
+      const ScanScreen(), // Index 2: Center (QR Scanner)
       AIInsightsScreen(selectedCurrency: _selectedCurrency), // Index 3
-      TransactionsScreen(selectedCurrency: _selectedCurrency),
+      ProfileScreen(selectedCurrency: _selectedCurrency), // Index 4: Profile
     ];
   }
 
@@ -78,9 +78,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           _buildNavItem(0, Icons.home_rounded),
           _buildNavItem(1, Icons.swap_horiz), // Exchange
-          _buildNavItem(2, Icons.person_outline), // Profile
+          _buildNavItem(2, Icons.qr_code_scanner), // Scan
           _buildNavItem(3, Icons.pie_chart_outline), // Analytics
-          _buildNavItem(4, Icons.history), // Transactions
+          _buildNavItem(4, Icons.person_outline), // Profile
         ],
       ),
     );

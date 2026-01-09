@@ -19,7 +19,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   bool _saveAccount = true;
   int _touchedIndex = 4; // Default to Friday
   
-  // Basic mock rates map (duplicated for simplicity or we could move to a shared data file)
+  // Local State for interactive features
+  String _recipientName = 'Amilina Josef';
+  String _recipientAccount = '4562 4568 2391 7780';
+  double _transferAmount = 180.00;
+  double _userBalance = 8182.80;
+
+  // Basic mock rates map
   final Map<String, double> _exchangeRates = {
     'USD': 1.0,
     'MYR': 4.65,
@@ -40,6 +46,119 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
       case 'IDR': return 'Rp';
       default: return '\$';
     }
+  }
+
+  void _updateRecipient(String name, String account) {
+    setState(() {
+      _recipientName = name;
+      _recipientAccount = account;
+    });
+    Navigator.pop(context);
+  }
+
+  void _showAmountEditDialog() {
+    TextEditingController amountController = TextEditingController(text: _transferAmount.toStringAsFixed(2));
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Edit Amount', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: TextField(
+          controller: amountController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: InputDecoration(
+            prefixText: '$_currencySymbol ',
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              double? newAmount = double.tryParse(amountController.text);
+              if (newAmount != null && newAmount > 0) {
+                setState(() {
+                  _transferAmount = newAmount;
+                });
+                Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _sendMoney() {
+    if (_transferAmount > _userBalance) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Insufficient balance!'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    // Simulate backend delay then success
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    Future.delayed(const Duration(seconds: 1), () {
+      Navigator.pop(context); // Close loading
+      
+      setState(() {
+        _userBalance -= _transferAmount;
+      });
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check, color: Colors.white, size: 32),
+              ),
+              const SizedBox(height: 24),
+              const Text('Transfer Successful!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+              const SizedBox(height: 8),
+              Text(
+                'You sent $_currencySymbol${(_transferAmount * _conversionRate).toStringAsFixed(2)} to $_recipientName',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Done', style: TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -66,7 +185,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                '$_currencySymbol${(8182.80 * _conversionRate).toStringAsFixed(2)}',
+                '$_currencySymbol${(_userBalance * _conversionRate).toStringAsFixed(2)}',
                 style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 32,
@@ -170,6 +289,16 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _buildChartCard() {
+    // Distinct data for Income vs Expense
+    final bool isExpense = _selectedSegment == 1;
+    final String label = isExpense ? 'Total Expenses' : 'Total Income';
+    final double totalValue = isExpense ? 6282.20 : 12500.50;
+    
+    // Mock Chart Data
+    final List<double> expenseData = [12, 8, 6, 10, 16, 7, 4];
+    final List<double> incomeData = [15, 18, 12, 14, 10, 16, 9];
+    final List<double> currentData = isExpense ? expenseData : incomeData;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -191,10 +320,10 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [ // Removed const
-                  const Text(
-                    'Total Expenses',
-                    style: TextStyle(
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -202,7 +331,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$_currencySymbol${(6282.20 * _conversionRate).toStringAsFixed(2)}',
+                    '$_currencySymbol${(totalValue * _conversionRate).toStringAsFixed(2)}',
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontSize: 20,
@@ -230,7 +359,20 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 alignment: BarChartAlignment.spaceAround,
                 maxY: 20, // Normalized max Y
                 barTouchData: BarTouchData(
-                  enabled: false,
+                  enabled: true, // Enabled Interaction
+                  touchTooltipData: BarTouchTooltipData(
+                    getTooltipColor: (_) => Colors.black,
+                    tooltipRoundedRadius: 8,
+                    getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      return BarTooltipItem(
+                        rod.toY.toStringAsFixed(1),
+                        const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    },
+                  ),
                   touchCallback: (FlTouchEvent event, barTouchResponse) {
                    if (!event.isInterestedForInteractions ||
                         barTouchResponse == null ||
@@ -288,15 +430,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                   ),
                 ),
                 borderData: FlBorderData(show: false),
-                barGroups: [
-                  _makeBarGroup(0, 12),
-                  _makeBarGroup(1, 8),
-                  _makeBarGroup(2, 6),
-                  _makeBarGroup(3, 10),
-                  _makeBarGroup(4, 16, isSelected: true), // Friday highlighted
-                  _makeBarGroup(5, 7),
-                  _makeBarGroup(6, 4),
-                ],
+                barGroups: List.generate(7, (index) {
+                  return _makeBarGroup(
+                    index, 
+                    currentData[index], 
+                    isSelected: _touchedIndex == index
+                  );
+                }),
               ),
             ),
           ),
@@ -355,25 +495,25 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             children: [
               const CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage('assets/images/profile.jpg'), // Use real asset (User's profile for now or placeholder)
+                backgroundImage: AssetImage('assets/images/profile.jpg'),
                 backgroundColor: AppColors.primaryLight,
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      'Amilina Josef',
-                      style: TextStyle(
+                      _recipientName,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
-                      '4562 4568 2391 7780',
-                      style: TextStyle(
+                      _recipientAccount,
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 12,
                         letterSpacing: 0.5,
@@ -400,13 +540,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                             leading: const CircleAvatar(child: Text('A')),
                             title: const Text('Amilina Josef'),
                             subtitle: const Text('... 7780'),
-                            onTap: () => Navigator.pop(context),
+                            onTap: () => _updateRecipient('Amilina Josef', '4562 4568 2391 7780'),
                           ),
                           ListTile(
                             leading: const CircleAvatar(child: Text('J')),
                             title: const Text('John Doe'),
                             subtitle: const Text('... 1234'),
-                            onTap: () => Navigator.pop(context),
+                            onTap: () => _updateRecipient('John Doe', '1234 5678 9012 3456'),
                           ),
                         ],
                       ),
@@ -445,7 +585,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '$_currencySymbol${(180.00 * _conversionRate).toStringAsFixed(2)}',
+                '$_currencySymbol${(_transferAmount * _conversionRate).toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
@@ -453,12 +593,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {
-                   showDialog(
-                    context: context,
-                    builder: (context) => const AlertDialog(title: Text('Edit Amount'), content: Text('Input field here...')),
-                  );
-                },
+                onPressed: _showAmountEditDialog,
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFFF5F6FA),
                   shape: RoundedRectangleBorder(
@@ -528,22 +663,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.check_circle, color: Colors.green, size: 64),
-                        const SizedBox(height: 16),
-                        const Text('Transfer Successful!', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                      ],
-                    ),
-                  ),
-                );
-              },
+              onPressed: _sendMoney,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryBlue,
                 shape: RoundedRectangleBorder(
